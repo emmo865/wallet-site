@@ -1,34 +1,75 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Deposit TON</title>
+  <title>Mega Lottery - Deposit</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
-    body { font-family: sans-serif; padding: 20px; background-color: #1c1c1c; color: white; text-align: center; }
-    input { width: 80%; padding: 10px; font-size: 16px; border-radius: 8px; border: none; margin: 10px 0; }
-    button { padding: 15px 20px; font-size: 16px; border-radius: 8px; border: none; background-color: #0088cc; color: white; cursor: pointer; width: 90%; font-weight: bold; margin-top: 10px; }
-    button:disabled { background-color: #555; cursor: not-allowed; }
-    #status { margin: 15px 0; color: #aaa; }
-    #pay-section { display: none; margin-top: 20px; padding: 15px; border: 1px solid #333; border-radius: 10px; }
+    body { 
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
+      padding: 20px; 
+      background-color: #1c1c1c; 
+      color: white; 
+      text-align: center; 
+    }
+    h2 { margin-bottom: 5px; }
+    p.subtitle { color: #888; font-size: 14px; margin-top: 0; margin-bottom: 20px; }
+    input { 
+      width: 85%; 
+      padding: 12px; 
+      font-size: 18px; 
+      border-radius: 10px; 
+      border: 1px solid #333; 
+      background-color: #2a2a2a;
+      color: white;
+      margin: 10px 0; 
+      text-align: center;
+    }
+    button.pay-btn { 
+      padding: 16px 20px; 
+      font-size: 16px; 
+      border-radius: 10px; 
+      border: none; 
+      background-color: #0088cc; 
+      color: white; 
+      cursor: pointer; 
+      width: 90%; 
+      font-weight: bold; 
+      margin-top: 15px;
+      transition: background 0.2s;
+    }
+    button.pay-btn:hover { background-color: #0077b3; }
+    button.pay-btn:disabled { background-color: #555; cursor: not-allowed; }
+    #status { margin: 15px 0; color: #aaa; font-size: 14px; }
+    #pay-section { 
+      display: none; 
+      margin-top: 20px; 
+      padding: 20px; 
+      border: 1px solid #333; 
+      border-radius: 12px; 
+      background-color: #222;
+    }
+    .rate-info { font-size: 13px; color: #aaa; margin-bottom: 15px; }
   </style>
 </head>
 <body>
   <h2>Deposit TON</h2>
+  <p class="subtitle">Top up your game balance</p>
   
-  <!-- دکمه اتصال کیف پول -->
+  <!-- Wallet Connect Button -->
   <div id="ton-connect"></div>
 
-  <!-- وضعیت اتصال -->
-  <p id="status">در حال بارگذاری...</p>
+  <!-- Connection Status -->
+  <p id="status">Loading...</p>
 
-  <!-- بخش پرداخت (بعد از اتصال نمایش داده می‌شود) -->
+  <!-- Payment Section (Shown after connection) -->
   <div id="pay-section">
-    <p style="margin:0 0 10px 0;">مقدار TON برای واریز:</p>
+    <div class="rate-info">Rate: 1 TON = 1,000 Coins<br>Minimum: 0.5 TON</div>
+    <p style="margin:0 0 10px 0; font-size: 14px;">Amount to deposit (TON):</p>
     <input type="number" id="amount" value="2" min="0.5" step="0.1" />
     <br>
-    <button id="pay-btn">پرداخت و واریز</button>
+    <button class="pay-btn" id="pay-btn">Pay & Deposit</button>
   </div>
 
   <script>
@@ -40,7 +81,10 @@
     let tonConnectUI = null;
     let currentWallet = null;
 
-    // 1. لود کردن کتابخانه TonConnect
+    // ⚠️ YOUR TON WALLET ADDRESS ⚠️
+    const MY_TON_WALLET = "UQC1AAJaC9IGTWNpjfxzBEfK-J9T29upIMuC5WLdeRPeb7qc";
+
+    // 1. Load TonConnect Library
     const sources = [
       'https://cdn.jsdelivr.net/npm/@tonconnect/ui@2/dist/tonconnect-ui.min.js',
       'https://unpkg.com/@tonconnect/ui@2/dist/tonconnect-ui.min.js'
@@ -58,7 +102,7 @@
       document.head.appendChild(s);
     }
 
-    // 2. راه‌اندازی
+    // 2. Initialize
     function init() {
       try {
         if (window.Telegram && Telegram.WebApp) Telegram.WebApp.ready();
@@ -68,17 +112,17 @@
           buttonRootId: 'ton-connect'
         });
 
-        status.textContent = 'کیف پول متصل نیست';
+        status.textContent = 'Wallet not connected';
 
-        // 3. وقتی وضعیت کیف پول تغییر کرد
+        // 3. Handle Status Change
         tonConnectUI.onStatusChange(wallet => {
           if (wallet) {
             currentWallet = wallet;
-            status.textContent = '✅ کیف پول متصل شد: ' + wallet.account.address.substring(0, 6) + '...';
-            paySection.style.display = 'block'; // نمایش فرم پرداخت
+            status.textContent = '✅ Wallet Connected: ' + wallet.account.address.substring(0, 6) + '...';
+            paySection.style.display = 'block'; 
           } else {
             currentWallet = null;
-            status.textContent = 'کیف پول متصل نیست';
+            status.textContent = 'Wallet not connected';
             paySection.style.display = 'none';
           }
         });
@@ -87,31 +131,27 @@
       }
     }
 
-    // 4. رویداد کلیک روی دکمه پرداخت
+    // 4. Pay Button Click Event
     payBtn.addEventListener('click', async () => {
       if (!currentWallet) {
-        alert('لطفا ابتدا کیف پول را متصل کنید.');
+        alert('Please connect your wallet first.');
         return;
       }
 
       const amount = parseFloat(amountInput.value);
       if (isNaN(amount) || amount < 0.5) {
-        alert('حداقل مقدار واریز 0.5 TON است.');
+        alert('Minimum deposit amount is 0.5 TON.');
         return;
       }
 
-      // تبدیل TON به نانو (1 TON = 1,000,000,000 nano)
+      // Convert TON to nano (1 TON = 1,000,000,000 nano)
       const amountInNano = Math.floor(amount * 1000000000).toString();
 
-      // ⚠️ اینجا آدرس ولت خودتان (ادمین) را قرار دهید ⚠️
-      const MY_WALLET_ADDRESS = "UQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"; 
-      // آدرس بالا را با آدرس واقعی ولت خود جایگزین کنید!
-
       const transaction = {
-        validUntil: Math.floor(Date.now() / 1000) + 600, // 10 دقیقه اعتبار
+        validUntil: Math.floor(Date.now() / 1000) + 600, // 10 minutes validity
         messages: [
           {
-            address: MY_WALLET_ADDRESS,
+            address: MY_TON_WALLET,
             amount: amountInNano
           }
         ]
@@ -119,31 +159,28 @@
 
       try {
         payBtn.disabled = true;
-        payBtn.textContent = 'در حال ارسال تراکنش...';
+        payBtn.textContent = 'Processing...';
         
         const result = await tonConnectUI.sendTransaction(transaction);
         
-        // اگر به اینجا رسید، تراکنش در کیف پول کاربر تایید شده است
-        status.textContent = '✅ تراکنش موفق! در حال واریز سکه...';
+        // Transaction successful in wallet
+        status.textContent = '✅ Transaction successful! Adding coins...';
         
-        // ⚠️ اینجا باید کد را به ربات تلگرام بفرستید تا سکه اضافه شود ⚠️
-        // چون ربات شما در Railway است، باید از طریق API تلگرام پیام بفرستید
+        // Send data back to Telegram Bot (Railway)
         if (window.Telegram && Telegram.WebApp) {
            Telegram.WebApp.sendData(JSON.stringify({
               action: "deposit_success",
               amount: amount
            }));
-           // بستن مینی‌اپ پس از موفقیت (اختیاری)
-           // Telegram.WebApp.close();
         }
 
       } catch (e) {
         console.error(e);
-        status.textContent = '❌ تراکنش ناموفق یا لغو شد.';
-        alert('خطا در تراکنش: ' + (e.message || 'لغو شد'));
+        status.textContent = '❌ Transaction failed or cancelled.';
+        alert('Transaction error: ' + (e.message || 'Cancelled'));
       } finally {
         payBtn.disabled = false;
-        payBtn.textContent = 'پرداخت و واریز';
+        payBtn.textContent = 'Pay & Deposit';
       }
     });
 
