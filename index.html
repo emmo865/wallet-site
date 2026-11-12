@@ -29,7 +29,7 @@
     function init() {
       try {
         if (window.Telegram && Telegram.WebApp) Telegram.WebApp.ready();
-        const ui = new TonConnectUI({
+        const ui = new TON_CONNECT_UI.TonConnectUI({
           manifestUrl: location.origin + '/tonconnect-manifest.json',
           buttonRootId: 'ton-connect'
         });
