@@ -9,8 +9,9 @@
   <style>
     :root {
       --bg-dark: #121212; --bg-card: #1e1e1e; --bg-card-hover: #2c2c2c;
-      --text-main: #ffffff; --text-muted: #888888; --primary: #0088cc;
+      --text-main: #ffffff; --text-muted: #888888; --primary: #7b61ff;
       --accent: #ffcc00; --success: #4caf50; --danger: #f44336;
+      --gold: #ffd700; --silver: #c0c0c0; --bronze: #cd7f32;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; -webkit-tap-highlight-color: transparent; }
     body { background-color: var(--bg-dark); color: var(--text-main); padding-bottom: 80px; overflow-x: hidden; }
@@ -21,156 +22,162 @@
     .user-avatar { width: 30px; height: 30px; border-radius: 50%; background: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 16px; }
     .balance-badge { background: var(--bg-card); padding: 8px 15px; border-radius: 12px; text-align: right; }
     .balance-label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; }
-    .balance-value { font-size: 18px; font-weight: bold; color: var(--accent); }
+    .balance-value { font-size: 18px; font-weight: bold; color: var(--text-main); display: flex; align-items: center; gap: 5px;}
+    .ton-icon { color: #0088cc; font-weight: bold; }
 
     /* Pages & Cards */
     .page { display: none; padding: 15px; animation: fadeIn 0.3s ease; }
     .page.active { display: block; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     .card { background-color: var(--bg-card); border-radius: 16px; padding: 20px; margin-bottom: 15px; border: 1px solid #2a2a2a; }
-    .card-title { font-size: 16px; margin-bottom: 15px; color: var(--text-main); display: flex; justify-content: space-between; align-items: center;}
+
+    /* Leaderboard Tabs */
+    .lb-tabs { display: flex; background: var(--bg-card); border-radius: 12px; padding: 5px; margin-bottom: 15px; }
+    .lb-tab { flex: 1; padding: 10px; text-align: center; border-radius: 8px; font-size: 14px; font-weight: bold; color: var(--text-muted); cursor: pointer; transition: 0.3s; }
+    .lb-tab.active { background: var(--primary); color: white; }
+
+    /* Leaderboard Styles */
+    .leaderboard-header { background: linear-gradient(135deg, #2b1b54 0%, #1a1a1a 100%); border-radius: 16px; padding: 20px; margin-bottom: 20px; border: 1px solid #4a2c8a; }
+    .lb-title { font-size: 20px; display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
     
-    /* Tabs inside Games */
-    .tabs { display: flex; background: var(--bg-card); border-radius: 12px; padding: 5px; margin-bottom: 15px; }
-    .tab-btn { flex: 1; padding: 10px; text-align: center; border-radius: 8px; font-size: 14px; font-weight: bold; color: var(--text-muted); cursor: pointer; transition: 0.3s; }
-    .tab-btn.active { background: var(--bg-card-hover); color: var(--accent); }
-
-    /* Countdown Timer */
-    .timer-box { display: flex; gap: 8px; margin: 10px 0 20px 0; justify-content: center; }
-    .timer-part { background: #111; border: 1px solid #333; border-radius: 8px; padding: 8px 12px; text-align: center; min-width: 60px; }
-    .timer-num { font-size: 20px; font-weight: bold; color: var(--accent); }
-    .timer-label { font-size: 10px; color: var(--text-muted); text-transform: uppercase; }
-
-    /* Buttons */
-    .btn-main { width: 100%; padding: 16px; border: none; border-radius: 12px; font-size: 16px; font-weight: bold; cursor: pointer; background-color: var(--accent); color: #000; transition: 0.2s; }
-    .btn-main:active { transform: scale(0.98); }
-    .btn-main:disabled { background-color: #444; color: #888; cursor: not-allowed; }
-    .btn-secondary { background-color: var(--bg-card-hover); color: white; margin-top: 10px; font-size: 13px; padding: 10px;}
+    .lb-list { display: flex; flex-direction: column; gap: 10px; }
+    .lb-row { display: flex; align-items: center; background: var(--bg-card); padding: 12px 15px; border-radius: 12px; border: 1px solid #2a2a2a; }
+    .lb-rank { width: 30px; font-size: 16px; font-weight: bold; text-align: center; margin-right: 10px; }
+    .lb-row.rank-1 { border-color: var(--gold); background: rgba(255, 215, 0, 0.05); }
+    .lb-row.rank-2 { border-color: var(--silver); background: rgba(192, 192, 192, 0.05); }
+    .lb-row.rank-3 { border-color: var(--bronze); background: rgba(205, 127, 50, 0.05); }
+    .lb-avatar { width: 40px; height: 40px; border-radius: 50%; background: #333; margin-right: 15px; }
+    .lb-name { flex: 1; font-weight: bold; font-size: 14px; }
+    .lb-tickets { font-weight: bold; color: var(--accent); font-size: 14px; display: flex; align-items: center; gap: 5px;}
+    
+    /* Sticky User Row */
+    .sticky-user-row { position: sticky; bottom: 80px; background: var(--bg-card-hover); border-radius: 12px; padding: 15px; display: flex; align-items: center; border: 1px solid #444; margin-top: 20px; box-shadow: 0 -5px 15px rgba(0,0,0,0.5); z-index: 50;}
+    
+    /* Deposit Modal Custom Styles */
+    .deposit-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    .wallet-address-box { display: flex; align-items: center; justify-content: space-between; background: var(--bg-dark); padding: 12px 15px; border-radius: 12px; margin-bottom: 20px; border: 1px solid #333; }
+    .wallet-address-box span { font-family: monospace; font-size: 14px; color: var(--text-muted); }
+    .wallet-address-box button { background: none; border: none; color: var(--primary); font-size: 18px; cursor: pointer; }
+    .custom-input-wrapper { position: relative; margin-bottom: 15px; }
+    .custom-input-wrapper input { width: 100%; padding: 18px 15px; border-radius: 12px; border: 1px solid #333; background: var(--bg-dark); color: white; font-size: 18px; outline: none; }
+    .custom-input-wrapper input:focus { border-color: var(--primary); }
+    .custom-input-wrapper .ton-symbol { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); color: #0088cc; font-weight: bold; font-size: 18px;}
+    .quick-amounts { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+    .quick-amounts div { background: var(--bg-dark); border: 1px solid #333; padding: 12px; border-radius: 10px; text-align: center; font-weight: bold; cursor: pointer; transition: 0.2s; }
+    .quick-amounts div:hover { border-color: var(--primary); }
+    .btn-deposit-action { width: 100%; padding: 18px; border: none; border-radius: 12px; font-size: 18px; font-weight: bold; cursor: pointer; background-color: var(--primary); color: white; transition: 0.2s; }
+    .btn-deposit-action:active { transform: scale(0.98); }
+    .btn-deposit-action:disabled { background-color: #333; color: #666; cursor: not-allowed; }
 
     /* Navigation */
     .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background-color: var(--bg-card); display: flex; justify-content: space-between; align-items: center; padding: 10px 20px; border-top: 1px solid #2a2a2a; z-index: 100; padding-bottom: max(10px, env(safe-area-inset-bottom)); }
     .nav-item { display: flex; flex-direction: column; align-items: center; color: var(--text-muted); font-size: 11px; cursor: pointer; transition: 0.2s; width: 60px;}
-    .nav-item.active { color: var(--accent); }
+    .nav-item.active { color: var(--primary); }
     .nav-icon { font-size: 22px; margin-bottom: 4px; }
-    .nav-deposit { background: var(--accent); color: #000; width: 60px; height: 60px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 32px; font-weight: bold; margin-top: -30px; box-shadow: 0 5px 15px rgba(255, 204, 0, 0.4); cursor: pointer; }
+    .nav-deposit { background: var(--primary); color: white; width: 60px; height: 60px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 32px; font-weight: bold; margin-top: -30px; box-shadow: 0 5px 15px rgba(123, 97, 255, 0.4); cursor: pointer; }
 
     /* Modals */
-    .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.85); z-index: 200; align-items: flex-end; justify-content: center; }
-    .modal-content { background: var(--bg-card); width: 100%; max-width: 500px; border-radius: 20px 20px 0 0; padding: 25px 20px; position: relative; animation: slideUp 0.3s ease; padding-bottom: max(25px, env(safe-area-inset-bottom));}
-    @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
-    .modal-close { position: absolute; top: 15px; right: 20px; font-size: 24px; color: var(--text-muted); cursor: pointer; }
-    
-    /* List Items */
-    .list-container { max-height: 150px; overflow-y: auto; margin-bottom: 15px; background: #111; border-radius: 8px; padding: 5px 10px;}
-    .list-item { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #333; font-size: 14px; }
-    .list-item:last-child { border-bottom: none; }
-    .list-item .name { color: var(--text-main); font-weight: 500; }
-    .list-item .value { color: var(--accent); font-weight: bold; }
+    .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: var(--bg-dark); z-index: 200; overflow-y: auto; animation: fadeIn 0.2s ease; }
+    .modal-content { padding: 20px; min-height: 100vh; display: flex; flex-direction: column; }
+    .modal-close { background: var(--bg-card); border: none; color: white; width: 40px; height: 40px; border-radius: 50%; font-size: 20px; display: flex; align-items: center; justify-content: center; cursor: pointer; margin-bottom: 20px; }
   </style>
 </head>
 <body>
 
+  <!-- Top Bar -->
   <div class="top-bar" id="main-header">
     <div class="user-badge">
       <div class="user-avatar">👤</div>
       <span id="user-name">Player</span>
     </div>
     <div class="balance-badge">
-      <div class="balance-label">Balance</div>
-      <div class="balance-value"><span id="user-coins">0</span> 🪙</div>
+      <div class="balance-label">Your balance</div>
+      <div class="balance-value"><span class="ton-icon">💎</span> <span id="user-coins">0.00</span></div>
     </div>
   </div>
 
   <!-- === PAGE 1: HOME === -->
   <div id="page-home" class="page active">
-    <div class="card" style="background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);">
-      <h2 style="font-size: 24px; color: var(--accent);">Mega Lottery 🎰</h2>
-      <p style="font-size: 14px; margin-top: 5px;">Buy tickets to win big TON prizes!</p>
-    </div>
-    <div class="card">
-      <div class="card-title">👥 Invite Friends</div>
-      <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 15px;">Earn 500 coins for every 1 TON your friends deposit.</p>
-      <button class="btn-main btn-secondary" onclick="sendAction('invite')">Get Invite Link</button>
+    <div class="card" style="background: linear-gradient(135deg, #7b61ff 0%, #2a5298 100%);">
+      <h2 style="font-size: 24px; color: white;">Mega Lottery 🎰</h2>
+      <p style="font-size: 14px; margin-top: 5px; color: #eee;">Buy tickets to win big TON prizes!</p>
     </div>
   </div>
 
-  <!-- === PAGE 2: LOTTERIES === -->
+  <!-- === PAGE 2: LEADERBOARD === -->
   <div id="page-lotteries" class="page">
-    <!-- Tabs -->
-    <div class="tabs">
-      <div class="tab-btn active" onclick="switchGameTab('daily', this)">Daily</div>
-      <div class="tab-btn" onclick="switchGameTab('weekly', this)">Weekly</div>
-      <div class="tab-btn" onclick="switchGameTab('monthly', this)">Monthly</div>
+    <!-- Tabs to switch between lotteries -->
+    <div class="lb-tabs">
+      <div class="lb-tab active" onclick="switchLbTab('daily')">Daily</div>
+      <div class="lb-tab" onclick="switchLbTab('weekly')">Weekly</div>
+      <div class="lb-tab" onclick="switchLbTab('monthly')">Monthly</div>
     </div>
 
-    <!-- DAILY DRAW -->
-    <div id="game-daily" class="game-content" style="display: block;">
-      <div class="card">
-        <div class="card-title">
-          <span>🟢 Daily Draw</span>
-          <span style="color: var(--accent); font-size: 14px;">10k Coins</span>
-        </div>
-        <div class="timer-box" id="timer-daily">
-          <div class="timer-part"><div class="timer-num t-h">00</div><div class="timer-label">Hours</div></div>
-          <div class="timer-part"><div class="timer-num t-m">00</div><div class="timer-label">Mins</div></div>
-          <div class="timer-part"><div class="timer-num t-s">00</div><div class="timer-label">Secs</div></div>
-        </div>
-        <div style="display: flex; justify-content: space-between; margin-bottom: 15px; color: var(--text-muted); font-size: 13px;">
-          <span>Your Tickets: <strong>0</strong></span>
-          <span>Price: 200 Coins</span>
-        </div>
-        <div class="list-container">
-          <div class="list-item"><span class="name">Emad</span><span class="value">5 Tickets</span></div>
-          <div class="list-item"><span class="name">Alex</span><span class="value">2 Tickets</span></div>
-        </div>
-        <button class="btn-main" onclick="sendAction('buy_ticket_1')">Buy Ticket (200 Coins)</button>
+    <div class="leaderboard-header">
+      <div class="lb-title">🏆 Top Participants</div>
+      <p style="font-size: 13px; color: #aaa;">The more tickets you buy, the higher your chance to win!</p>
+    </div>
+
+    <!-- Daily List -->
+    <div id="lb-daily-list" class="lb-list">
+      <div class="lb-row rank-1">
+        <div class="lb-rank" style="color: var(--gold);">🥇</div>
+        <img class="lb-avatar" src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" alt="avatar">
+        <div class="lb-name">zz***z0</div>
+        <div class="lb-tickets">🎟 143</div>
+      </div>
+      <div class="lb-row rank-2">
+        <div class="lb-rank" style="color: var(--silver);">🥈</div>
+        <img class="lb-avatar" src="https://api.dicebear.com/7.x/avataaars/svg?seed=Alex" alt="avatar">
+        <div class="lb-name">nn***z4</div>
+        <div class="lb-tickets">🎟 135</div>
+      </div>
+      <div class="lb-row rank-3">
+        <div class="lb-rank" style="color: var(--bronze);">🥉</div>
+        <img class="lb-avatar" src="https://api.dicebear.com/7.x/avataaars/svg?seed=John" alt="avatar">
+        <div class="lb-name">dr***on</div>
+        <div class="lb-tickets">🎟 110</div>
+      </div>
+      <div class="lb-row">
+        <div class="lb-rank" style="color: var(--text-muted);">4</div>
+        <img class="lb-avatar" src="https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah" alt="avatar">
+        <div class="lb-name">Sa***ah</div>
+        <div class="lb-tickets">🎟 100</div>
       </div>
     </div>
 
-    <!-- WEEKLY DRAW -->
-    <div id="game-weekly" class="game-content" style="display: none;">
-      <div class="card">
-        <div class="card-title">
-          <span>🔵 Weekly Draw</span>
-          <span style="color: var(--accent); font-size: 14px;">100k Coins</span>
-        </div>
-        <div class="timer-box" id="timer-weekly">
-          <div class="timer-part"><div class="timer-num t-d">00</div><div class="timer-label">Days</div></div>
-          <div class="timer-part"><div class="timer-num t-h">00</div><div class="timer-label">Hours</div></div>
-          <div class="timer-part"><div class="timer-num t-m">00</div><div class="timer-label">Mins</div></div>
-        </div>
-        <div style="display: flex; justify-content: space-between; margin-bottom: 15px; color: var(--text-muted); font-size: 13px;">
-          <span>Your Tickets: <strong>0</strong></span>
-          <span>Price: 1,500 Coins</span>
-        </div>
-        <div class="list-container">
-          <div class="list-item"><span class="name">Sarah</span><span class="value">10 Tickets</span></div>
-        </div>
-        <button class="btn-main" onclick="sendAction('buy_ticket_2')">Buy Ticket (1,500 Coins)</button>
+    <!-- Weekly List (Hidden by default) -->
+    <div id="lb-weekly-list" class="lb-list" style="display: none;">
+      <div class="lb-row rank-1">
+        <div class="lb-rank" style="color: var(--gold);">🥇</div>
+        <img class="lb-avatar" src="https://api.dicebear.com/7.x/avataaars/svg?seed=Alice" alt="avatar">
+        <div class="lb-name">Al***ce</div>
+        <div class="lb-tickets">🎟 850</div>
+      </div>
+      <div class="lb-row rank-2">
+        <div class="lb-rank" style="color: var(--silver);">🥈</div>
+        <img class="lb-avatar" src="https://api.dicebear.com/7.x/avataaars/svg?seed=Bob" alt="avatar">
+        <div class="lb-name">Bo***ob</div>
+        <div class="lb-tickets">🎟 720</div>
       </div>
     </div>
 
-    <!-- MONTHLY DRAW -->
-    <div id="game-monthly" class="game-content" style="display: none;">
-      <div class="card">
-        <div class="card-title">
-          <span>🟣 Monthly Draw</span>
-          <span style="color: var(--accent); font-size: 14px;">1M Coins</span>
-        </div>
-        <div class="timer-box" id="timer-monthly">
-          <div class="timer-part"><div class="timer-num t-d">00</div><div class="timer-label">Days</div></div>
-          <div class="timer-part"><div class="timer-num t-h">00</div><div class="timer-label">Hours</div></div>
-          <div class="timer-part"><div class="timer-num t-m">00</div><div class="timer-label">Mins</div></div>
-        </div>
-        <div style="display: flex; justify-content: space-between; margin-bottom: 15px; color: var(--text-muted); font-size: 13px;">
-          <span>Your Tickets: <strong>0</strong></span>
-          <span>Price: 6,000 Coins</span>
-        </div>
-        <div class="list-container">
-          <div class="list-item"><span class="name">John</span><span class="value">50 Tickets</span></div>
-        </div>
-        <button class="btn-main" onclick="sendAction('buy_ticket_3')">Buy Ticket (6,000 Coins)</button>
+    <!-- Monthly List (Hidden by default) -->
+    <div id="lb-monthly-list" class="lb-list" style="display: none;">
+      <div class="lb-row rank-1">
+        <div class="lb-rank" style="color: var(--gold);">🥇</div>
+        <img class="lb-avatar" src="https://api.dicebear.com/7.x/avataaars/svg?seed=Charlie" alt="avatar">
+        <div class="lb-name">Ch***ie</div>
+        <div class="lb-tickets">🎟 3500</div>
       </div>
+    </div>
+
+    <!-- Sticky User Row (Shows current user's tickets for the selected tab) -->
+    <div class="sticky-user-row">
+      <div class="lb-rank" style="color: var(--text-muted);">999+</div>
+      <div class="user-avatar" style="margin-right: 15px;">👤</div>
+      <div class="lb-name" style="flex: 1;">You</div>
+      <div class="lb-tickets" id="user-current-tickets">🎟 0</div>
     </div>
   </div>
 
@@ -180,74 +187,58 @@
       <div style="font-size: 50px; margin-bottom: 10px;">👤</div>
       <h3 id="profile-name" style="margin-bottom: 5px;">Player Name</h3>
       <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 20px;" id="profile-id">ID: 0</p>
-      
-      <div style="display: flex; justify-content: space-around; background: var(--bg-dark); padding: 15px; border-radius: 12px;">
-        <div>
-          <div style="color: var(--text-muted); font-size: 12px;">Total Won</div>
-          <div style="font-weight: bold; font-size: 16px;">0 TON</div>
-        </div>
-        <div>
-          <div style="color: var(--text-muted); font-size: 12px;">Available</div>
-          <div style="font-weight: bold; font-size: 16px; color: var(--success);" id="available-ton">0 TON</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="card-title">💸 Withdraw TON</div>
-      <p style="color: var(--text-muted); font-size: 13px; margin-bottom: 15px;">Only available for winners. Requires admin approval.</p>
-      <button class="btn-main" id="withdraw-btn" onclick="sendAction('request_withdraw')" disabled>Request Withdrawal</button>
     </div>
   </div>
 
   <!-- Bottom Nav -->
   <div class="bottom-nav">
     <div class="nav-item active" id="nav-home" onclick="switchPage('home')"><span class="nav-icon">🏠</span><span>Home</span></div>
-    <div class="nav-item" id="nav-lotteries" onclick="switchPage('lotteries')"><span class="nav-icon">🎟</span><span>Games</span></div>
+    <div class="nav-item" id="nav-lotteries" onclick="switchPage('lotteries')"><span class="nav-icon">🏆</span><span>Leaderboard</span></div>
     <div class="nav-deposit" onclick="openDepositModal()">+</div>
     <div class="nav-item" id="nav-profile" onclick="switchPage('profile')"><span class="nav-icon">👤</span><span>Profile</span></div>
-    <div class="nav-item" onclick="sendAction('support')"><span class="nav-icon">💬</span><span>Support</span></div>
   </div>
 
-  <!-- Deposit Modal (Same as before) -->
+  <!-- === DEPOSIT MODAL (Full Screen) === -->
   <div class="modal" id="deposit-modal">
     <div class="modal-content">
-      <span class="modal-close" onclick="closeDepositModal()">&times;</span>
-      <h2 style="margin-bottom: 20px;">Deposit TON</h2>
-      <div id="step-amount">
-        <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 15px;">Select amount to deposit</p>
-        <div class="amount-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-          <button class="btn-main btn-secondary" onclick="selectAmount(1, this)">1 TON</button>
-          <button class="btn-main btn-secondary active" onclick="selectAmount(2, this)">2 TON</button>
-          <button class="btn-main btn-secondary" onclick="selectAmount(5, this)">5 TON</button>
-          <button class="btn-main btn-secondary" onclick="selectAmount(10, this)">10 TON</button>
-        </div>
-        <button class="btn-main" style="margin-top: 20px;" onclick="proceedToConnect()">Continue</button>
+      <div class="deposit-header">
+        <button class="modal-close" onclick="closeDepositModal()">←</button>
+        <h2 style="font-size: 18px;">Top Up Balance</h2>
+        <div style="width: 40px;"></div>
       </div>
-      <div id="step-connect" style="display: none;">
+      
+      <div class="wallet-address-box">
+        <span>UQC1...b7qc</span>
+        <button onclick="navigator.clipboard.writeText('UQC1AAJaC9IGTWNpjfxzBEfK-J9T29upIMuC5WLdeRPeb7qc')">📋</button>
+      </div>
+
+      <div style="margin-bottom: 10px; color: var(--text-muted); font-size: 13px;">Amount (minimum 1 TON)</div>
+      <div class="custom-input-wrapper">
+        <input type="number" id="deposit-input" placeholder="Enter amount..." min="1" step="0.1" oninput="validateInput()">
+        <span class="ton-symbol">💎</span>
+      </div>
+
+      <div class="quick-amounts">
+        <div onclick="setAmount(1)">+1 TON</div>
+        <div onclick="setAmount(5)">+5 TON</div>
+        <div onclick="setAmount(10)">+10 TON</div>
+      </div>
+
+      <div style="margin-top: auto; padding-top: 20px;">
         <div id="ton-connect" style="margin-bottom: 15px;"></div>
-        <p id="wallet-status" class="text-center" style="color: var(--text-muted); font-size: 13px; margin-bottom: 15px;">Wallet not connected</p>
-        <div id="payment-btn-container" style="display: none;">
-          <button class="btn-main" id="pay-btn" onclick="processPayment()">Pay & Deposit</button>
-        </div>
+        <p id="wallet-status" class="text-center" style="color: var(--text-muted); font-size: 13px; margin-bottom: 15px;">Connect wallet to continue</p>
+        
+        <button class="btn-deposit-action" id="pay-btn" onclick="processPayment()" disabled>Top Up</button>
       </div>
     </div>
   </div>
 
   <script>
-    // ⚠️ تنظیمات
     const MY_TON_WALLET = "UQC1AAJaC9IGTWNpjfxzBEfK-J9T29upIMuC5WLdeRPeb7qc";
     const MANIFEST_URL = 'https://emmo865.github.io/wallet-site/tonconnect-manifest.json';
-    let selectedAmount = 2;
+    
     let tonConnectUI = null;
     let currentWallet = null;
-
-    // ⚠️ زمان‌های پایان (برای تست، زمان کوتاه گذاشته شده)
-    let endTimes = {
-      daily: Date.now() + (24 * 60 * 60 * 1000),   // 24 ساعت
-      weekly: Date.now() + (7 * 24 * 60 * 60 * 1000), // 7 روز
-      monthly: Date.now() + (30 * 24 * 60 * 60 * 1000) // 30 روز
-    };
 
     // Telegram Init
     if (window.Telegram && Telegram.WebApp) {
@@ -261,33 +252,7 @@
       }
     }
 
-    // Timer Logic (Updates every second)
-    setInterval(() => {
-      updateTimer('daily', endTimes.daily);
-      updateTimer('weekly', endTimes.weekly);
-      updateTimer('monthly', endTimes.monthly);
-    }, 1000);
-
-    function updateTimer(type, endTime) {
-      const container = document.getElementById(`timer-${type}`);
-      if (!container) return;
-
-      const now = Date.now();
-      let diff = endTime - now;
-      if (diff < 0) diff = 0;
-
-      const d = Math.floor(diff / (1000 * 60 * 60 * 24));
-      const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-      const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-      const s = Math.floor((diff % (1000 * 60)) / 1000);
-
-      if (container.querySelector('.t-d')) container.querySelector('.t-d').innerText = String(d).padStart(2, '0');
-      if (container.querySelector('.t-h')) container.querySelector('.t-h').innerText = String(h).padStart(2, '0');
-      if (container.querySelector('.t-m')) container.querySelector('.t-m').innerText = String(m).padStart(2, '0');
-      if (container.querySelector('.t-s')) container.querySelector('.t-s').innerText = String(s).padStart(2, '0');
-    }
-
-    // Navigation
+    // Nav
     function switchPage(pageName) {
       document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
       document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
@@ -295,34 +260,46 @@
       document.getElementById(`nav-${pageName}`).classList.add('active');
     }
 
-    function switchGameTab(gameType, btn) {
-      document.querySelectorAll('.tab-btn').forEach(t => t.classList.remove('active'));
-      btn.classList.add('active');
+    // Leaderboard Tab Logic
+    function switchLbTab(tabName) {
+      document.querySelectorAll('.lb-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.lb-list').forEach(l => l.style.display = 'none');
       
-      document.querySelectorAll('.game-content').forEach(c => c.style.display = 'none');
-      document.getElementById(`game-${gameType}`).style.display = 'block';
+      // Update active tab UI
+      if (tabName === 'daily') document.querySelectorAll('.lb-tab')[0].classList.add('active');
+      if (tabName === 'weekly') document.querySelectorAll('.lb-tab')[1].classList.add('active');
+      if (tabName === 'monthly') document.querySelectorAll('.lb-tab')[2].classList.add('active');
+      
+      // Show selected list
+      document.getElementById(`lb-${tabName}-list`).style.display = 'flex';
+      
+      // Update user's sticky row (Mock data)
+      const mockUserTickets = { daily: 5, weekly: 0, monthly: 0 };
+      document.getElementById('user-current-tickets').innerText = '🎟 ' + mockUserTickets[tabName];
     }
 
-    // Modals & Actions
-    function openDepositModal() { document.getElementById('deposit-modal').style.display = 'flex'; document.getElementById('step-amount').style.display = 'block'; document.getElementById('step-connect').style.display = 'none'; }
+    // Deposit Modal Logic
+    function openDepositModal() { 
+      document.getElementById('deposit-modal').style.display = 'block'; 
+      if (!tonConnectUI) initTonConnect();
+    }
     function closeDepositModal() { document.getElementById('deposit-modal').style.display = 'none'; }
     
-    function selectAmount(amount, btn) {
-      selectedAmount = amount;
-      document.querySelectorAll('#step-amount .btn-secondary').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
+    function setAmount(val) {
+      document.getElementById('deposit-input').value = val;
+      validateInput();
     }
 
-    function sendAction(action, extraData = {}) {
-      if (window.Telegram && Telegram.WebApp) {
-        Telegram.WebApp.sendData(JSON.stringify({ action: action, ...extraData }));
+    function validateInput() {
+      const val = parseFloat(document.getElementById('deposit-input').value);
+      const btn = document.getElementById('pay-btn');
+      if (val >= 1 && currentWallet) {
+        btn.disabled = false;
+        btn.innerText = 'Top Up ' + val + ' TON';
+      } else {
+        btn.disabled = true;
+        btn.innerText = 'Top Up';
       }
-    }
-
-    function proceedToConnect() {
-      document.getElementById('step-amount').style.display = 'none';
-      document.getElementById('step-connect').style.display = 'block';
-      if (!tonConnectUI) initTonConnect();
     }
 
     function initTonConnect() {
@@ -331,23 +308,42 @@
         tonConnectUI.onStatusChange(wallet => {
           if (wallet) {
             currentWallet = wallet;
-            document.getElementById('wallet-status').innerText = '✅ Connected';
-            document.getElementById('payment-btn-container').style.display = 'block';
+            document.getElementById('wallet-status').innerText = '✅ Wallet Connected';
+            validateInput();
+          } else {
+            currentWallet = null;
+            document.getElementById('wallet-status').innerText = 'Connect wallet to continue';
+            document.getElementById('pay-btn').disabled = true;
           }
         });
       } catch (e) { document.getElementById('wallet-status').innerText = 'Error loading wallet.'; }
     }
 
     async function processPayment() {
-      if (!currentWallet) return alert('Connect wallet first');
-      const amountInNano = Math.floor(selectedAmount * 1000000000).toString();
+      if (!currentWallet) return;
+      
+      const amount = parseFloat(document.getElementById('deposit-input').value);
+      if (amount < 1) return alert('Minimum is 1 TON');
+
+      const amountInNano = Math.floor(amount * 1000000000).toString();
       const transaction = { validUntil: Math.floor(Date.now() / 1000) + 600, messages: [{ address: MY_TON_WALLET, amount: amountInNano }] };
+      
       try {
-        document.getElementById('pay-btn').style.display = 'none';
+        const btn = document.getElementById('pay-btn');
+        btn.innerText = 'Processing...';
+        btn.disabled = true;
+        
         await tonConnectUI.sendTransaction(transaction);
-        sendAction("deposit_success", { amount: selectedAmount });
+        
+        if (window.Telegram && Telegram.WebApp) {
+          Telegram.WebApp.sendData(JSON.stringify({ action: "deposit_success", amount: amount }));
+        }
+        
         setTimeout(() => closeDepositModal(), 1000);
-      } catch (e) { alert('Transaction failed.'); document.getElementById('pay-btn').style.display = 'block'; }
+      } catch (e) { 
+        alert('Transaction failed or cancelled.'); 
+        validateInput();
+      }
     }
   </script>
 </body>
