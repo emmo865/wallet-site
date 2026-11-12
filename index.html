@@ -81,7 +81,7 @@
     let tonConnectUI = null;
     let currentWallet = null;
 
-    // ⚠️ YOUR EXACT TON WALLET ADDRESS (FROM YOUR SCREENSHOT) ⚠️
+    // ⚠️ آدرس ولت شما
     const MY_TON_WALLET = "UQC1AAJaC9IGTWNpjfxzBEfK-J9T29upIMuC5WLdeRPeb7qc";
 
     // 1. Load TonConnect Library
@@ -107,8 +107,9 @@
       try {
         if (window.Telegram && Telegram.WebApp) Telegram.WebApp.ready();
         
+        // ⚠️ آدرس مانیفست به صورت کامل و مطلق (بدون نسبی) نوشته شده است
         tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
-          manifestUrl: location.origin + '/tonconnect-manifest.json',
+          manifestUrl: 'https://emmo865.github.io/wallet-site/tonconnect-manifest.json',
           buttonRootId: 'ton-connect'
         });
 
@@ -144,7 +145,6 @@
         return;
       }
 
-      // Convert TON to nano (1 TON = 1,000,000,000 nano)
       const amountInNano = Math.floor(amount * 1000000000).toString();
 
       const transaction = {
@@ -163,10 +163,8 @@
         
         const result = await tonConnectUI.sendTransaction(transaction);
         
-        // Transaction successful in wallet
         status.textContent = '✅ Transaction successful! Adding coins...';
         
-        // Send data back to Telegram Bot (Railway)
         if (window.Telegram && Telegram.WebApp) {
            Telegram.WebApp.sendData(JSON.stringify({
               action: "deposit_success",
