@@ -5,21 +5,43 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Wallet Test</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  <script src="https://unpkg.com/@tonconnect/ui@2/dist/tonconnect-ui.min.js"></script>
 </head>
 <body style="font-family:sans-serif;padding:20px">
   <div id="ton-connect"></div>
-  <p id="status">not connected</p>
+  <p id="status">loading...</p>
   <script>
-    Telegram.WebApp.ready();
-    const ui = new TonConnectUI({
-      manifestUrl: location.origin + '/tonconnect-manifest.json',
-      buttonRootId: 'ton-connect'
-    });
-    ui.onStatusChange(w => {
-      document.getElementById('status').textContent =
-        w ? 'connected: ' + w.account.address : 'not connected';
-    });
+    const status = document.getElementById('status');
+    const sources = [
+      'https://cdn.jsdelivr.net/npm/@tonconnect/ui@2/dist/tonconnect-ui.min.js',
+      'https://unpkg.com/@tonconnect/ui@2/dist/tonconnect-ui.min.js'
+    ];
+    function load(i) {
+      if (i >= sources.length) {
+        status.textContent = 'ERROR: could not load TonConnect library';
+        return;
+      }
+      const s = document.createElement('script');
+      s.src = sources[i];
+      s.onload = init;
+      s.onerror = () => load(i + 1);
+      document.head.appendChild(s);
+    }
+    function init() {
+      try {
+        if (window.Telegram && Telegram.WebApp) Telegram.WebApp.ready();
+        const ui = new TonConnectUI({
+          manifestUrl: location.origin + '/tonconnect-manifest.json',
+          buttonRootId: 'ton-connect'
+        });
+        status.textContent = 'not connected';
+        ui.onStatusChange(w => {
+          status.textContent = w ? 'connected: ' + w.account.address : 'not connected';
+        });
+      } catch (e) {
+        status.textContent = 'ERROR: ' + e.message;
+      }
+    }
+    load(0);
   </script>
 </body>
 </html>
