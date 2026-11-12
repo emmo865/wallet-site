@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Wallet Test</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <script src="https://unpkg.com/@tonconnect/ui@2/dist/tonconnect-ui.min.js"></script>
+</head>
+<body style="font-family:sans-serif;padding:20px">
+  <div id="ton-connect"></div>
+  <p id="status">not connected</p>
+  <script>
+    Telegram.WebApp.ready();
+    const ui = new TonConnectUI({
+      manifestUrl: location.origin + '/tonconnect-manifest.json',
+      buttonRootId: 'ton-connect'
+    });
+    ui.onStatusChange(w => {
+      document.getElementById('status').textContent =
+        w ? 'connected: ' + w.account.address : 'not connected';
+    });
+  </script>
+</body>
+</html>
