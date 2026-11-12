@@ -1,47 +1,74 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Wallet Test</title>
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deposit TON</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
+    <style>
+        body { background: #0f0f13; color: white; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif; margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; box-sizing: border-box; }
+        .header { text-align: center; margin-bottom: 30px; }
+        .header h1 { margin: 0; font-size: 24px; font-weight: 800; }
+        .header p { color: #888; font-size: 14px; margin-top: 5px; }
+        .card { background: #1c1c21; border-radius: 20px; padding: 20px; width: 100%; max-width: 400px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); margin-bottom: 20px; }
+        .rate { color: #aaa; font-size: 14px; margin-bottom: 15px; text-align: center; }
+        .input-group { position: relative; margin-bottom: 20px; }
+        .input-group input { width: 100%; padding: 18px; padding-right: 50px; font-size: 20px; font-weight: bold; border-radius: 15px; border: 2px solid #333; background: #111; color: white; box-sizing: border-box; outline: none; }
+        .input-group input:focus { border-color: #facc15; }
+        .input-group .ton-label { position: absolute; right: 20px; top: 50%; transform: translateY(-50%); color: #facc15; font-weight: bold; font-size: 16px; }
+        #ton-connect { margin-bottom: 15px; }
+        .btn-confirm { background: #22c55e; color: white; border: none; padding: 18px; font-size: 18px; font-weight: 800; border-radius: 15px; width: 100%; cursor: pointer; display: none; }
+    </style>
 </head>
-<body style="font-family:sans-serif;padding:20px">
-  <div id="ton-connect"></div>
-  <p id="status">loading...</p>
-  <script>
-    const status = document.getElementById('status');
-    const sources = [
-      'https://cdn.jsdelivr.net/npm/@tonconnect/ui@2/dist/tonconnect-ui.min.js',
-      'https://unpkg.com/@tonconnect/ui@2/dist/tonconnect-ui.min.js'
-    ];
-    function load(i) {
-      if (i >= sources.length) {
-        status.textContent = 'ERROR: could not load TonConnect library';
-        return;
-      }
-      const s = document.createElement('script');
-      s.src = sources[i];
-      s.onload = init;
-      s.onerror = () => load(i + 1);
-      document.head.appendChild(s);
-    }
-    function init() {
-      try {
-        if (window.Telegram && Telegram.WebApp) Telegram.WebApp.ready();
-        const ui = new TON_CONNECT_UI.TonConnectUI({
-          manifestUrl: location.origin + '/tonconnect-manifest.json',
-          buttonRootId: 'ton-connect'
+<body>
+    <div class="header">
+        <h1>Deposit TON</h1>
+        <p>Top up your game balance</p>
+    </div>
+    <div class="card">
+        <div class="rate">Rate: 1 TON = 1,000 Coins<br>Minimum: 0.5 TON</div>
+        <div class="input-group">
+            <input type="number" id="amountInput" placeholder="0.0" min="0.5" value="2">
+            <span class="ton-label">TON</span>
+        </div>
+        <div id="ton-connect"></div>
+        <button id="confirmBtn" class="btn-confirm" onclick="sendTransaction()">Confirm Payment</button>
+    </div>
+
+    <script>
+        const tg = window.Telegram.WebApp;
+        tg.expand();
+
+        // 🚨 لینک Manifest شما اینجاست
+        const manifestUrl = "https://statuesque-tapioca-5039c9.netlify.app/tonconnect-manifest.json";
+
+        const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
+            manifestUrl: manifestUrl,
+            buttonRootId: 'ton-connect'
         });
-        status.textContent = 'not connected';
-        ui.onStatusChange(w => {
-          status.textContent = w ? 'connected: ' + w.account.address : 'not connected';
+
+        tonConnectUI.onStatusChange(wallet => {
+            if (wallet) {
+                document.getElementById('confirmBtn').style.display = 'block';
+            }
         });
-      } catch (e) {
-        status.textContent = 'ERROR: ' + e.message;
-      }
-    }
-    load(0);
-  </script>
+
+        async function sendTransaction() {
+            const amount = parseFloat(document.getElementById('amountInput').value);
+            if (isNaN(amount) || amount < 0.5) { tg.showAlert("Minimum deposit is 0.5 TON"); return; }
+            
+            const transaction = {
+                validUntil: Math.floor(Date.now() / 1000) + 600,
+                messages: [{ address: "UQC1AAJaC9IGTWNpjfxzBEfK-J9T29upIMeC5WLdeRPeb7qc", amount: (amount * 1000000000).toString() }]
+            };
+            
+            try {
+                await tonConnectUI.sendTransaction(transaction);
+                tg.sendData(JSON.stringify({ action: "deposit_success", amount: amount }));
+                tg.close();
+            } catch (e) { tg.showAlert("Transaction failed: " + e); }
+        }
+    </script>
 </body>
 </html>
