@@ -6,6 +6,9 @@
   <title>Mega Lottery</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@tonconnect/ui@2/dist/tonconnect-ui.min.js"></script>
+  <!-- Chart.js برای ساخت چرخ -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  
   <style>
     :root {
       --bg-dark: #121212; --bg-card: #1e1e1e; --bg-card-hover: #2c2c2c;
@@ -30,6 +33,12 @@
     .page.active { display: block; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     .card { background-color: var(--bg-card); border-radius: 16px; padding: 20px; margin-bottom: 15px; border: 1px solid #2a2a2a; }
+
+    /* Luck Wheel Section */
+    .wheel-container { position: relative; width: 100%; max-width: 300px; margin: 0 auto 20px auto; }
+    .wheel-center-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; pointer-events: none; }
+    .wheel-center-text h3 { font-size: 24px; color: var(--accent); margin-bottom: 0; }
+    .wheel-center-text p { font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
 
     /* Leaderboard Tabs */
     .lb-tabs { display: flex; background: var(--bg-card); border-radius: 12px; padding: 5px; margin-bottom: 15px; }
@@ -104,7 +113,7 @@
     </div>
   </div>
 
-  <!-- === PAGE 2: LEADERBOARD === -->
+  <!-- === PAGE 2: LEADERBOARD & WHEEL === -->
   <div id="page-lotteries" class="page">
     <!-- Tabs to switch between lotteries -->
     <div class="lb-tabs">
@@ -113,9 +122,21 @@
       <div class="lb-tab" onclick="switchLbTab('monthly')">Monthly</div>
     </div>
 
+    <!-- LUCK WHEEL (Only shown for Daily) -->
+    <div id="wheel-section" class="card" style="display: block;">
+      <h3 style="text-align: center; margin-bottom: 15px; font-size: 16px;">Luck Wheel (Daily)</h3>
+      <div class="wheel-container">
+        <canvas id="wheelCanvas"></canvas>
+        <div class="wheel-center-text">
+          <h3 id="total-tickets">0</h3>
+          <p>Tickets</p>
+        </div>
+      </div>
+      <p style="text-align: center; color: var(--text-muted); font-size: 12px; margin-top: 10px;">Your chance depends on the number of tickets.</p>
+    </div>
+
     <div class="leaderboard-header">
       <div class="lb-title">🏆 Top Participants</div>
-      <p style="font-size: 13px; color: #aaa;">The more tickets you buy, the higher your chance to win!</p>
     </div>
 
     <!-- Daily List -->
@@ -132,33 +153,14 @@
         <div class="lb-name">nn***z4</div>
         <div class="lb-tickets">🎟 135</div>
       </div>
-      <div class="lb-row rank-3">
-        <div class="lb-rank" style="color: var(--bronze);">🥉</div>
-        <img class="lb-avatar" src="https://api.dicebear.com/7.x/avataaars/svg?seed=John" alt="avatar">
-        <div class="lb-name">dr***on</div>
-        <div class="lb-tickets">🎟 110</div>
-      </div>
-      <div class="lb-row">
-        <div class="lb-rank" style="color: var(--text-muted);">4</div>
-        <img class="lb-avatar" src="https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah" alt="avatar">
-        <div class="lb-name">Sa***ah</div>
-        <div class="lb-tickets">🎟 100</div>
-      </div>
     </div>
 
     <!-- Weekly List (Hidden by default) -->
     <div id="lb-weekly-list" class="lb-list" style="display: none;">
       <div class="lb-row rank-1">
         <div class="lb-rank" style="color: var(--gold);">🥇</div>
-        <img class="lb-avatar" src="https://api.dicebear.com/7.x/avataaars/svg?seed=Alice" alt="avatar">
         <div class="lb-name">Al***ce</div>
         <div class="lb-tickets">🎟 850</div>
-      </div>
-      <div class="lb-row rank-2">
-        <div class="lb-rank" style="color: var(--silver);">🥈</div>
-        <img class="lb-avatar" src="https://api.dicebear.com/7.x/avataaars/svg?seed=Bob" alt="avatar">
-        <div class="lb-name">Bo***ob</div>
-        <div class="lb-tickets">🎟 720</div>
       </div>
     </div>
 
@@ -166,13 +168,12 @@
     <div id="lb-monthly-list" class="lb-list" style="display: none;">
       <div class="lb-row rank-1">
         <div class="lb-rank" style="color: var(--gold);">🥇</div>
-        <img class="lb-avatar" src="https://api.dicebear.com/7.x/avataaars/svg?seed=Charlie" alt="avatar">
         <div class="lb-name">Ch***ie</div>
         <div class="lb-tickets">🎟 3500</div>
       </div>
     </div>
 
-    <!-- Sticky User Row (Shows current user's tickets for the selected tab) -->
+    <!-- Sticky User Row -->
     <div class="sticky-user-row">
       <div class="lb-rank" style="color: var(--text-muted);">999+</div>
       <div class="user-avatar" style="margin-right: 15px;">👤</div>
@@ -182,7 +183,7 @@
   </div>
 
   <!-- === PAGE 3: PROFILE === -->
-  <div id="page-profile" class="page">
+  <div class="page" id="page-profile">
     <div class="card text-center">
       <div style="font-size: 50px; margin-bottom: 10px;">👤</div>
       <h3 id="profile-name" style="margin-bottom: 5px;">Player Name</h3>
@@ -239,6 +240,7 @@
     
     let tonConnectUI = null;
     let currentWallet = null;
+    let wheelChart = null; // متغیر برای نگه داشتن چرخ
 
     // Telegram Init
     if (window.Telegram && Telegram.WebApp) {
@@ -252,12 +254,65 @@
       }
     }
 
+    // ⚠️ داده‌های دمو برای چرخ (در آینده از دیتابیس خوانده می‌شود)
+    const wheelData = {
+      labels: ['User1 (40%)', 'User2 (25%)', 'User3 (20%)', 'You (15%)'],
+      data: [40, 25, 20, 15],
+      colors: ['#ff6384', '#36a2eb', '#ffce56', '#4bc0c0']
+    };
+
+    function initWheel() {
+      const ctx = document.getElementById('wheelCanvas').getContext('2d');
+      
+      // اگر چرخ قبلا ساخته شده بود، آن را پاک کن
+      if (wheelChart) wheelChart.destroy();
+
+      wheelChart = new Chart(ctx, {
+        type: 'doughnut', // نوع چرخ
+        data: {
+          labels: wheelData.labels,
+          datasets: [{
+            data: wheelData.data,
+            backgroundColor: wheelData.colors,
+            borderWidth: 2,
+            borderColor: '#1e1e1e' // رنگ حاشیه بین قطعات
+          }]
+        },
+        options: {
+          cutout: '70%', // برای اینکه وسط چرخ خالی بماند
+          plugins: {
+            legend: { display: false }, // مخفی کردن لیست کنار چرخ
+            tooltip: {
+              callbacks: {
+                label: function(context) {
+                  return context.label + ': ' + context.raw + '%';
+                }
+              }
+            }
+          },
+          animation: {
+            animateRotate: true,
+            animateScale: false
+          }
+        }
+      });
+
+      // محاسبه مجموع بلیت‌ها برای نمایش در وسط چرخ
+      const total = wheelData.data.reduce((a, b) => a + b, 0);
+      document.getElementById('total-tickets').innerText = total * 10; // ضرب در ۱۰ برای نمایش عدد واقعی‌تر
+    }
+
     // Nav
     function switchPage(pageName) {
       document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
       document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
       document.getElementById(`page-${pageName}`).classList.add('active');
       document.getElementById(`nav-${pageName}`).classList.add('active');
+      
+      // اگر به صفحه لیدربرد رفتیم، چرخ را رندر کن
+      if (pageName === 'lotteries') {
+        setTimeout(initWheel, 100); // تاخیر کوچک برای اطمینان از لود شدن DOM
+      }
     }
 
     // Leaderboard Tab Logic
@@ -265,15 +320,23 @@
       document.querySelectorAll('.lb-tab').forEach(t => t.classList.remove('active'));
       document.querySelectorAll('.lb-list').forEach(l => l.style.display = 'none');
       
-      // Update active tab UI
+      // آپدیت UI تب فعال
       if (tabName === 'daily') document.querySelectorAll('.lb-tab')[0].classList.add('active');
       if (tabName === 'weekly') document.querySelectorAll('.lb-tab')[1].classList.add('active');
       if (tabName === 'monthly') document.querySelectorAll('.lb-tab')[2].classList.add('active');
       
-      // Show selected list
+      // نمایش لیست مربوطه
       document.getElementById(`lb-${tabName}-list`).style.display = 'flex';
       
-      // Update user's sticky row (Mock data)
+      // نمایش یا مخفی کردن چرخ (فقط برای روزانه)
+      if (tabName === 'daily') {
+        document.getElementById('wheel-section').style.display = 'block';
+        initWheel();
+      } else {
+        document.getElementById('wheel-section').style.display = 'none';
+      }
+      
+      // آپدیت باکس پایین (دمو)
       const mockUserTickets = { daily: 5, weekly: 0, monthly: 0 };
       document.getElementById('user-current-tickets').innerText = '🎟 ' + mockUserTickets[tabName];
     }
