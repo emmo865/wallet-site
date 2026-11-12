@@ -3,18 +3,49 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Wallet Test</title>
+  <title>Deposit TON</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    body { font-family: sans-serif; padding: 20px; background-color: #1c1c1c; color: white; text-align: center; }
+    input { width: 80%; padding: 10px; font-size: 16px; border-radius: 8px; border: none; margin: 10px 0; }
+    button { padding: 15px 20px; font-size: 16px; border-radius: 8px; border: none; background-color: #0088cc; color: white; cursor: pointer; width: 90%; font-weight: bold; margin-top: 10px; }
+    button:disabled { background-color: #555; cursor: not-allowed; }
+    #status { margin: 15px 0; color: #aaa; }
+    #pay-section { display: none; margin-top: 20px; padding: 15px; border: 1px solid #333; border-radius: 10px; }
+  </style>
 </head>
-<body style="font-family:sans-serif;padding:20px">
+<body>
+  <h2>Deposit TON</h2>
+  
+  <!-- دکمه اتصال کیف پول -->
   <div id="ton-connect"></div>
-  <p id="status">loading...</p>
+
+  <!-- وضعیت اتصال -->
+  <p id="status">در حال بارگذاری...</p>
+
+  <!-- بخش پرداخت (بعد از اتصال نمایش داده می‌شود) -->
+  <div id="pay-section">
+    <p style="margin:0 0 10px 0;">مقدار TON برای واریز:</p>
+    <input type="number" id="amount" value="2" min="0.5" step="0.1" />
+    <br>
+    <button id="pay-btn">پرداخت و واریز</button>
+  </div>
+
   <script>
     const status = document.getElementById('status');
+    const paySection = document.getElementById('pay-section');
+    const payBtn = document.getElementById('pay-btn');
+    const amountInput = document.getElementById('amount');
+    
+    let tonConnectUI = null;
+    let currentWallet = null;
+
+    // 1. لود کردن کتابخانه TonConnect
     const sources = [
       'https://cdn.jsdelivr.net/npm/@tonconnect/ui@2/dist/tonconnect-ui.min.js',
       'https://unpkg.com/@tonconnect/ui@2/dist/tonconnect-ui.min.js'
     ];
+
     function load(i) {
       if (i >= sources.length) {
         status.textContent = 'ERROR: could not load TonConnect library';
@@ -26,23 +57,97 @@
       s.onerror = () => load(i + 1);
       document.head.appendChild(s);
     }
+
+    // 2. راه‌اندازی
     function init() {
       try {
         if (window.Telegram && Telegram.WebApp) Telegram.WebApp.ready();
-        const ui = new TON_CONNECT_UI.TonConnectUI({
+        
+        tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
           manifestUrl: location.origin + '/tonconnect-manifest.json',
           buttonRootId: 'ton-connect'
         });
-        status.textContent = 'not connected';
-        ui.onStatusChange(w => {
-          status.textContent = w ? 'connected: ' + w.account.address : 'not connected';
+
+        status.textContent = 'کیف پول متصل نیست';
+
+        // 3. وقتی وضعیت کیف پول تغییر کرد
+        tonConnectUI.onStatusChange(wallet => {
+          if (wallet) {
+            currentWallet = wallet;
+            status.textContent = '✅ کیف پول متصل شد: ' + wallet.account.address.substring(0, 6) + '...';
+            paySection.style.display = 'block'; // نمایش فرم پرداخت
+          } else {
+            currentWallet = null;
+            status.textContent = 'کیف پول متصل نیست';
+            paySection.style.display = 'none';
+          }
         });
       } catch (e) {
         status.textContent = 'ERROR: ' + e.message;
       }
     }
+
+    // 4. رویداد کلیک روی دکمه پرداخت
+    payBtn.addEventListener('click', async () => {
+      if (!currentWallet) {
+        alert('لطفا ابتدا کیف پول را متصل کنید.');
+        return;
+      }
+
+      const amount = parseFloat(amountInput.value);
+      if (isNaN(amount) || amount < 0.5) {
+        alert('حداقل مقدار واریز 0.5 TON است.');
+        return;
+      }
+
+      // تبدیل TON به نانو (1 TON = 1,000,000,000 nano)
+      const amountInNano = Math.floor(amount * 1000000000).toString();
+
+      // ⚠️ اینجا آدرس ولت خودتان (ادمین) را قرار دهید ⚠️
+      const MY_WALLET_ADDRESS = "UQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"; 
+      // آدرس بالا را با آدرس واقعی ولت خود جایگزین کنید!
+
+      const transaction = {
+        validUntil: Math.floor(Date.now() / 1000) + 600, // 10 دقیقه اعتبار
+        messages: [
+          {
+            address: MY_WALLET_ADDRESS,
+            amount: amountInNano
+          }
+        ]
+      };
+
+      try {
+        payBtn.disabled = true;
+        payBtn.textContent = 'در حال ارسال تراکنش...';
+        
+        const result = await tonConnectUI.sendTransaction(transaction);
+        
+        // اگر به اینجا رسید، تراکنش در کیف پول کاربر تایید شده است
+        status.textContent = '✅ تراکنش موفق! در حال واریز سکه...';
+        
+        // ⚠️ اینجا باید کد را به ربات تلگرام بفرستید تا سکه اضافه شود ⚠️
+        // چون ربات شما در Railway است، باید از طریق API تلگرام پیام بفرستید
+        if (window.Telegram && Telegram.WebApp) {
+           Telegram.WebApp.sendData(JSON.stringify({
+              action: "deposit_success",
+              amount: amount
+           }));
+           // بستن مینی‌اپ پس از موفقیت (اختیاری)
+           // Telegram.WebApp.close();
+        }
+
+      } catch (e) {
+        console.error(e);
+        status.textContent = '❌ تراکنش ناموفق یا لغو شد.';
+        alert('خطا در تراکنش: ' + (e.message || 'لغو شد'));
+      } finally {
+        payBtn.disabled = false;
+        payBtn.textContent = 'پرداخت و واریز';
+      }
+    });
+
     load(0);
   </script>
 </body>
 </html>
-
