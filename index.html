@@ -8,151 +8,266 @@
   <script src="https://cdn.jsdelivr.net/npm/@tonconnect/ui@2/dist/tonconnect-ui.min.js"></script>
   
   <style>
-    /* همان استایل‌های قبلی بدون تغییر */
-    :root { --bg-dark: #121212; --bg-card: #1e1e1e; --text-main: #ffffff; --text-muted: #888888; --primary: #7b61ff; --accent: #ffcc00; --success: #4caf50; --ton-blue: #0098EA; }
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; -webkit-tap-highlight-color: transparent; }
-    body { background-color: var(--bg-dark); color: var(--text-main); padding-bottom: 90px; }
+    :root {
+      --bg-dark: #121212; --bg-card: #1e1e1e; --bg-card-hover: #2c2c2c;
+      --text-main: #ffffff; --text-muted: #888888; --primary: #7b61ff;
+      --accent: #ffcc00; --success: #4caf50; --danger: #f44336;
+      --gold: #ffd700; --ton-blue: #0098EA;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; -webkit-tap-highlight-color: transparent; }
+    body { background-color: var(--bg-dark); color: var(--text-main); padding-bottom: 90px; overflow-x: hidden; }
+    
+    /* TOP HEADER */
     .top-header { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background-color: var(--bg-dark); position: sticky; top: 0; z-index: 10; }
     .user-info { display: flex; align-items: center; gap: 10px; cursor: pointer; background: var(--bg-card); padding: 6px 12px 6px 6px; border-radius: 20px; border: 1px solid #2a2a2a;}
-    .user-avatar-top { width: 32px; height: 32px; border-radius: 50%; background: var(--primary); display: flex; align-items: center; justify-content: center; }
-    .user-name-top { font-size: 14px; font-weight: bold; }
-    .user-balance-top { font-size: 12px; color: var(--accent); font-weight: bold; }
-    .btn-deposit-top { background: var(--primary); color: white; padding: 8px 15px; border-radius: 20px; font-size: 14px; font-weight: bold; border: none; cursor: pointer; }
-    .page { display: none; padding: 15px; }
+    .user-avatar-top { width: 32px; height: 32px; border-radius: 50%; background: var(--primary); display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0;}
+    .user-details-top { display: flex; flex-direction: column; }
+    .user-name-top { font-size: 14px; font-weight: bold; line-height: 1.2;}
+    .user-balance-top { font-size: 12px; color: var(--accent); font-weight: bold; display: flex; align-items: center; gap: 3px;}
+    .right-header { display: flex; align-items: center; gap: 10px; }
+    .btn-deposit-top { background: var(--primary); color: white; padding: 8px 15px; border-radius: 20px; font-size: 14px; font-weight: bold; border: none; cursor: pointer; display: flex; align-items: center; gap: 5px; box-shadow: 0 4px 10px rgba(123, 97, 255, 0.3); }
+
+    /* Pages */
+    .page { display: none; padding: 15px; animation: fadeIn 0.3s ease; }
     .page.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* Banners */
     .banner-container { display: flex; flex-direction: column; gap: 15px; }
-    .banner { position: relative; border-radius: 16px; padding: 20px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
+    .banner { position: relative; border-radius: 16px; padding: 20px; display: flex; justify-content: space-between; align-items: center; overflow: hidden; cursor: pointer; box-shadow: 0 8px 20px rgba(0,0,0,0.3); transition: transform 0.2s ease; }
+    .banner:active { transform: scale(0.98); }
     .banner-blue { background: linear-gradient(135deg, #2b5876 0%, #4e4376 100%); }
     .banner-orange { background: linear-gradient(135deg, #f12711 0%, #f5af19 100%); }
     .banner-purple { background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%); }
     .banner-green { background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); }
     .banner-red { background: linear-gradient(135deg, #cb2d3e 0%, #ef473a 100%); }
     .banner-gold { background: linear-gradient(135deg, #b8860b 0%, #ffd700 100%); color: #000; }
-    .table-title { font-size: 18px; font-weight: 900; text-transform: uppercase; color: #fff; }
+    .table-content { display: flex; flex-direction: column; gap: 5px; z-index: 1; margin-top: 15px;}
+    .table-title { font-size: 18px; font-weight: 900; text-transform: uppercase; color: #fff; text-shadow: 0 2px 4px rgba(0,0,0,0.3);}
     .table-limit { font-size: 13px; color: rgba(255,255,255,0.8); font-weight: 600;}
-    .table-timer { font-size: 20px; font-weight: bold; color: #fff; font-family: monospace; }
+    .table-timer-container { text-align: right; z-index: 1; margin-top: 15px;}
+    .table-timer { font-size: 20px; font-weight: bold; color: #fff; font-family: monospace; text-shadow: 0 2px 4px rgba(0,0,0,0.5);}
+    .table-timer-label { font-size: 10px; color: rgba(255,255,255,0.7); text-transform: uppercase; margin-top: 4px;}
+
+    /* DETAIL PAGE STYLES */
     .detail-header { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; }
-    .back-btn-circle { background: var(--bg-card); border: 1px solid #333; color: white; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+    .back-btn-circle { background: var(--bg-card); border: 1px solid #333; color: white; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0;}
+    .back-btn-circle svg { width: 20px; height: 20px; }
+    
     .mini-lb-title { font-size: 14px; color: var(--text-muted); text-transform: uppercase; margin-bottom: 10px; display: flex; justify-content: space-between;}
     .mini-lb-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; }
     .mini-lb-row { display: flex; justify-content: space-between; align-items: center; font-size: 14px; background: var(--bg-card); padding: 12px 15px; border-radius: 10px; border: 1px solid #2a2a2a;}
     .mini-lb-name { font-weight: bold; color: #ddd; }
     .mini-lb-chance { color: var(--success); font-weight: bold; background: rgba(76, 175, 80, 0.1); padding: 4px 8px; border-radius: 6px; font-size: 12px;}
     .mini-lb-amount { color: var(--accent); font-size: 13px; margin-left: 10px;}
+    
     .btn-join-large { width: 100%; padding: 16px; border-radius: 12px; background: var(--primary); color: white; font-weight: bold; font-size: 18px; border: none; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 8px; margin-top: 20px;}
+    .btn-join-large:active { transform: scale(0.98); }
+
+    /* REFERRAL PAGE STYLES */
     .referral-card { background: var(--bg-card); border-radius: 16px; padding: 25px; text-align: center; border: 1px solid #2a2a2a; }
     .referral-link-box { background: var(--bg-dark); padding: 15px; border-radius: 10px; border: 1px solid #333; margin: 20px 0; display: flex; justify-content: space-between; align-items: center; }
     .referral-link-text { font-family: monospace; color: var(--text-muted); font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background-color: var(--bg-card); display: flex; justify-content: space-between; align-items: center; padding: 10px 20px; border-top: 1px solid #2a2a2a; z-index: 100; }
-    .nav-item { display: flex; flex-direction: column; align-items: center; color: var(--text-muted); font-size: 11px; cursor: pointer; flex: 1;}
+
+    /* Navigation */
+    .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background-color: var(--bg-card); display: flex; justify-content: space-between; align-items: center; padding: 10px 20px; border-top: 1px solid #2a2a2a; z-index: 100; padding-bottom: max(10px, env(safe-area-inset-bottom)); }
+    .nav-item { display: flex; flex-direction: column; align-items: center; color: var(--text-muted); font-size: 11px; cursor: pointer; transition: 0.2s; flex: 1;}
     .nav-item.active { color: var(--primary); }
+    .nav-icon-wrapper { height: 24px; display: flex; align-items: center; justify-content: center; margin-bottom: 4px;}
     .nav-home-wrapper { flex: 1; display: flex; justify-content: center; align-items: center; position: relative;}
-    .nav-home-btn { background: var(--primary); color: white; width: 60px; height: 60px; border-radius: 50%; display: flex; justify-content: center; align-items: center; margin-top: -35px; cursor: pointer; border: 4px solid var(--bg-dark); z-index: 101;}
+    .nav-home-btn { background: var(--primary); color: white; width: 60px; height: 60px; border-radius: 50%; display: flex; justify-content: center; align-items: center; margin-top: -35px; box-shadow: 0 8px 20px rgba(123, 97, 255, 0.5); cursor: pointer; border: 4px solid var(--bg-dark); transition: 0.2s; z-index: 101;}
+    .nav-home-btn.active { background: var(--primary); }
     .nav-home-label { position: absolute; bottom: -18px; font-size: 11px; color: var(--primary); font-weight: bold;}
-    .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.85); z-index: 200; overflow-y: auto; }
+
+    /* Modals & Deposit */
+    .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.85); z-index: 200; overflow-y: auto; animation: fadeIn 0.2s ease; }
     .modal-content { background: var(--bg-card); padding: 20px; border-radius: 20px; margin: 20px; }
     .deposit-fullscreen { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: var(--bg-dark); z-index: 200; overflow-y: auto; }
     .deposit-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; padding-top: 10px;}
     .back-btn { background: var(--bg-card); border: 1px solid #333; color: white; width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; }
     .wallet-address-box { display: flex; align-items: center; justify-content: space-between; background: var(--bg-card); padding: 14px 18px; border-radius: 14px; margin-bottom: 25px; border: 1px solid #333; }
+    .wallet-address-box span { font-family: monospace; font-size: 15px; color: var(--text-muted); }
     .copy-btn { background: none; border: none; color: var(--primary); cursor: pointer; padding: 5px;}
     .custom-input-wrapper { position: relative; margin-bottom: 15px; }
     .custom-input-wrapper input { width: 100%; padding: 18px 15px 18px 45px; border-radius: 14px; border: 1px solid #333; background: var(--bg-card); color: white; font-size: 22px; font-weight: bold; outline: none; }
     .quick-amounts { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 25px; }
-    .quick-amounts div { background: var(--bg-card); border: 1px solid #333; padding: 14px; border-radius: 12px; text-align: center; font-weight: 600; cursor: pointer; color: #ddd;}
+    .quick-amounts div { background: var(--bg-card); border: 1px solid #333; padding: 14px; border-radius: 12px; text-align: center; font-weight: 600; cursor: pointer; transition: 0.2s; color: #ddd;}
     .wallet-status-box { display: flex; align-items: center; justify-content: space-between; background: var(--bg-card); border: 1px solid #333; padding: 14px 18px; border-radius: 14px; margin-bottom: 20px; }
     .wallet-status-box.connected { background: rgba(76, 175, 80, 0.05); border-color: rgba(76, 175, 80, 0.3); }
     .wallet-status-left { display: flex; align-items: center; gap: 10px; font-size: 14px; font-weight: 500; }
     .status-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--text-muted); }
-    .wallet-status-box.connected .status-dot { background: var(--success); }
-    .btn-deposit-action { width: 100%; padding: 18px; border: none; border-radius: 14px; font-size: 18px; font-weight: bold; cursor: pointer; background-color: var(--primary); color: white; }
+    .wallet-status-box.connected .status-dot { background: var(--success); box-shadow: 0 0 10px var(--success); }
+    .btn-deposit-action { width: 100%; padding: 18px; border: none; border-radius: 14px; font-size: 18px; font-weight: bold; cursor: pointer; background-color: var(--primary); color: white; transition: 0.2s; }
     .btn-deposit-action:disabled { background-color: var(--bg-card); color: #555; cursor: not-allowed; border: 1px solid #333;}
   </style>
 </head>
 <body>
 
+  <!-- === TOP HEADER === -->
   <div class="top-header">
     <div class="user-info" onclick="switchPage('profile')">
-      <div class="user-avatar-top"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg></div>
+      <div class="user-avatar-top">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+      </div>
       <div class="user-details-top">
         <span class="user-name-top" id="user-name-header">Player</span>
         <span class="user-balance-top"><span style="color: var(--ton-blue);">💎</span> <span id="header-balance">0.00</span> TON</span>
       </div>
     </div>
-    <div class="right-header"><button class="btn-deposit-top" onclick="openDepositModal()">+ Deposit</button></div>
+    <div class="right-header">
+      <button class="btn-deposit-top" onclick="openDepositModal()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+        Deposit
+      </button>
+    </div>
   </div>
 
+  <!-- === PAGE 1: HOME === -->
   <div id="page-home" class="page active">
-    <h3 style="margin-bottom: 20px; color: #fff;">🎰 Quick Tables</h3>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+      <h3 style="font-size: 20px; color: #fff;">🎰 Quick Tables</h3>
+      <span style="font-size: 12px; background: rgba(76, 175, 80, 0.2); color: var(--success); padding: 4px 8px; border-radius: 6px;">Auto-Draw: 2m</span>
+    </div>
     <div class="banner-container" id="home-tables-container"></div>
   </div>
 
+  <!-- === PAGE 2: EVENTS === -->
   <div id="page-events" class="page">
-    <h3 style="margin-bottom: 20px; color: #fff;">🏆 Main Events</h3>
+    <h3 style="margin-bottom: 20px; font-size: 20px; color: #fff;">🏆 Main Events</h3>
     <div class="banner-container" id="main-lotteries-container"></div>
   </div>
 
+  <!-- === PAGE 3: DETAIL PAGE === -->
   <div id="page-detail" class="page">
     <div class="detail-header">
-      <button class="back-btn-circle" onclick="switchPage(currentPageOrigin)">←</button>
+      <button class="back-btn-circle" onclick="switchPage(currentPageOrigin)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+      </button>
       <h2 id="detail-title" style="font-size: 20px;">Event Name</h2>
     </div>
+
     <div id="detail-banner-placeholder" style="margin-bottom: 20px;"></div>
     <div class="mini-lb-title"><span>Top Players</span><span>Chance</span></div>
-    <div class="mini-lb-list" id="detail-lb-list"><div style="text-align: center; color: var(--text-muted); padding: 20px;">Loading...</div></div>
+    <div class="mini-lb-list" id="detail-lb-list"><div style="text-align: center; color: var(--text-muted); padding: 20px;">Loading players...</div></div>
     <button class="btn-join-large" id="detail-join-btn" onclick="openJoinModal()">Join Now</button>
   </div>
 
+  <!-- === PAGE 4: REFERRAL === -->
   <div id="page-referral" class="page">
-    <h3 style="margin-bottom: 20px; color: #fff;">👥 Invite Friends</h3>
+    <h3 style="margin-bottom: 20px; font-size: 20px; color: #fff;">👥 Invite Friends</h3>
     <div class="referral-card">
       <div style="font-size: 50px; margin-bottom: 10px;">🎁</div>
       <h4 style="margin-bottom: 10px; font-size: 18px;">Earn Free Tickets!</h4>
-      <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 20px;">Invite your friends. For every <b>5 friends</b> who deposit at least <b>5 TON</b>, you will get <b>1 FREE Daily Draw Ticket</b>!</p>
+      <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 20px;">
+        Invite your friends. For every <b>5 friends</b> who deposit at least <b>5 TON</b>, you will get <b>1 FREE Daily Draw Ticket</b>!
+      </p>
+      
       <div class="referral-link-box">
         <span class="referral-link-text" id="ref-link-text">loading...</span>
-        <button class="copy-btn" onclick="copyRefLink()">📋</button>
+        <button class="copy-btn" onclick="copyRefLink()">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+        </button>
       </div>
+      
       <button class="btn-join-large" onclick="shareRefLink()" style="margin-top: 0;">Share Link</button>
     </div>
   </div>
 
+  <!-- === PAGE 5: PROFILE === -->
   <div class="page" id="page-profile">
     <div class="referral-card">
       <div style="width: 80px; height: 80px; background: rgba(123, 97, 255, 0.2); border-radius: 50%; margin: 0 auto 15px auto; display: flex; align-items: center; justify-content: center;">
-        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
       </div>
       <h3 id="profile-name" style="margin-bottom: 5px; font-size: 20px;">Player Name</h3>
       <p style="color: var(--text-muted); font-size: 14px;" id="profile-id">ID: 0</p>
     </div>
   </div>
 
+  <!-- Bottom Nav -->
   <div class="bottom-nav">
-    <div class="nav-item" id="nav-events" onclick="switchPage('events')"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"></path></svg><span>Events</span></div>
-    <div class="nav-home-wrapper"><div class="nav-home-btn active" id="nav-home" onclick="switchPage('home')"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg></div><div class="nav-home-label">Home</div></div>
-    <div class="nav-item" id="nav-referral" onclick="switchPage('referral')"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg><span>Referral</span></div>
+    <div class="nav-item" id="nav-events" onclick="switchPage('events')">
+      <div class="nav-icon-wrapper">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"></path><path d="M13 5v2"></path><path d="M13 17v2"></path><path d="M13 11v2"></path></svg>
+      </div>
+      <span>Events</span>
+    </div>
+
+    <div class="nav-home-wrapper">
+      <div class="nav-home-btn active" id="nav-home" onclick="switchPage('home')">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+      </div>
+      <div class="nav-home-label">Home</div>
+    </div>
+
+    <div class="nav-item" id="nav-referral" onclick="switchPage('referral')">
+      <div class="nav-icon-wrapper">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+      </div>
+      <span>Referral</span>
+    </div>
   </div>
 
+  <!-- === DEPOSIT MODAL === -->
   <div class="deposit-fullscreen" id="deposit-modal">
     <div style="padding: 20px; display: flex; flex-direction: column; min-height: 100vh;">
-      <div class="deposit-header"><button class="back-btn" onclick="closeDepositModal()">←</button><h2 style="font-size: 20px; font-weight: bold;">Deposit</h2><div style="width: 44px;"></div></div>
-      <div class="wallet-address-box"><span>UQC1...b7qc</span><button class="copy-btn" onclick="navigator.clipboard.writeText('UQC1AAJaC9IGTWNpjfxzBEfK-J9T29upIMuC5WLdeRPeb7qc')">📋</button></div>
+      <div class="deposit-header">
+        <button class="back-btn" onclick="closeDepositModal()">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        </button>
+        <h2 style="font-size: 20px; font-weight: bold;">Deposit</h2>
+        <div style="width: 44px;"></div> 
+      </div>
+      
+      <div class="wallet-address-box">
+        <span>UQC1...b7qc</span>
+        <button class="copy-btn" onclick="navigator.clipboard.writeText('UQC1AAJaC9IGTWNpjfxzBEfK-J9T29upIMuC5WLdeRPeb7qc'); alert('Copied!')">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+        </button>
+      </div>
+
       <div style="margin-bottom: 10px; color: var(--text-muted); font-size: 13px;">Amount (Min 5 TON)</div>
-      <div class="custom-input-wrapper"><input type="number" id="deposit-input" placeholder="0.0" min="5" step="1" oninput="validateInput()"><div style="position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--ton-blue);">💎</div></div>
-      <div class="quick-amounts"><div onclick="setAmount(5)">+5 TON</div><div onclick="setAmount(10)">+10 TON</div><div onclick="setAmount(25)">+25 TON</div></div>
+      
+      <div class="custom-input-wrapper">
+        <input type="number" id="deposit-input" placeholder="0.0" min="5" step="1" oninput="validateInput()">
+        <div style="position: absolute; left: 15px; top: 50%; transform: translateY(-50%); pointer-events: none;">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM12 20C7.59 20 4 16.41 4 12C4 7.59 7.59 4 12 4C16.41 4 20 7.59 20 12C20 16.41 16.41 20 12 20Z" fill="#0098EA"/><path d="M12 5L8 11H11V19L13 19V11H16L12 5Z" fill="#0098EA"/></svg>
+        </div>
+      </div>
+
+      <div class="quick-amounts">
+        <div onclick="setAmount(5)">+5 TON</div>
+        <div onclick="setAmount(10)">+10 TON</div>
+        <div onclick="setAmount(25)">+25 TON</div>
+      </div>
+
       <div style="margin-top: auto; padding-top: 20px;">
         <div id="ton-connect" style="margin-bottom: 15px;"></div>
-        <div id="wallet-status-box" class="wallet-status-box"><div class="wallet-status-left"><div class="status-dot"></div><span id="wallet-status-text">Connect Wallet</span></div></div>
+        
+        <div id="wallet-status-box" class="wallet-status-box">
+          <div class="wallet-status-left">
+            <div class="status-dot"></div>
+            <span id="wallet-status-text">Connect Wallet</span>
+          </div>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"/></svg>
+        </div>
+        
         <button class="btn-deposit-action" id="pay-btn" onclick="processPayment()" disabled>Deposit</button>
       </div>
     </div>
   </div>
 
+  <!-- === JOIN MODAL === -->
   <div class="modal" id="join-modal">
     <div class="modal-content">
       <h2 id="join-modal-title" style="margin-bottom: 10px; font-size: 20px; text-align: center;">Join</h2>
       <p id="join-modal-range" style="color: var(--text-muted); font-size: 14px; text-align: center; margin-bottom: 20px;">Entry: 1 - 10 TON</p>
-      <div class="custom-input-wrapper"><input type="number" id="join-input" placeholder="Enter amount" step="0.1"><div style="position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--ton-blue);">💎</div></div>
+      
+      <div class="custom-input-wrapper">
+        <input type="number" id="join-input" placeholder="Enter amount" step="0.1">
+        <div style="position: absolute; left: 15px; top: 50%; transform: translateY(-50%); pointer-events: none; color: var(--ton-blue); font-weight: bold;">💎</div>
+      </div>
+
       <button class="btn-deposit-action" onclick="confirmJoin()" style="margin-top: 15px; background: var(--success);">Confirm & Join</button>
       <button onclick="closeJoinModal()" style="width: 100%; background: none; border: none; color: var(--text-muted); margin-top: 15px; cursor: pointer;">Cancel</button>
     </div>
@@ -162,7 +277,7 @@
     const MY_TON_WALLET = "UQC1AAJaC9IGTWNpjfxzBEfK-J9T29upIMuC5WLdeRPeb7qc";
     const MANIFEST_URL = 'https://emmo865.github.io/wallet-site/tonconnect-manifest.json';
     
-    // ⚠️ دامنه Railway شما
+    // ⚠️ آدرس Railway شما
     const API_BASE_URL = 'https://my-telegram-bot-production-1ffb8e81.up.railway.app'; 
     
     let tonConnectUI = null;
@@ -229,6 +344,7 @@
       if (item.type === 'table') {
         try {
           const response = await fetch(`${API_BASE_URL}/api/table/${item.id}/players`);
+          if (!response.ok) throw new Error('Network response was not ok');
           const players = await response.json();
           
           lbList.innerHTML = '';
