@@ -32,17 +32,23 @@
     .page.active { display: block; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-    /* ===== PREMIUM TABLE BANNERS (Home) ===== */
-    .table-container { background: var(--bg-card); border-radius: 16px; margin-bottom: 20px; overflow: hidden; border: 1px solid #2a2a2a; }
+    /* ===== BANNERS (Used for both Tables and Lotteries) ===== */
+    .banner-container { display: flex; flex-direction: column; gap: 15px; }
     
-    .table-banner { 
+    .banner { 
       position: relative; 
-      padding: 15px 20px; 
+      border-radius: 16px; 
+      padding: 20px; 
       display: flex; 
       justify-content: space-between; 
       align-items: center;
       overflow: hidden;
+      cursor: pointer;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
+    .banner:active { transform: scale(0.98); }
+    
     .banner-blue { background: linear-gradient(135deg, #2b5876 0%, #4e4376 100%); }
     .banner-orange { background: linear-gradient(135deg, #f12711 0%, #f5af19 100%); }
     .banner-purple { background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%); }
@@ -52,33 +58,32 @@
     .banner-gold { background: linear-gradient(135deg, #b8860b 0%, #ffd700 100%); color: #000; }
     .banner-gold .table-limit, .banner-gold .table-title { color: #000; }
 
-    .badge { position: absolute; top: 10px; left: 10px; padding: 3px 8px; border-radius: 6px; font-size: 10px; font-weight: bold; text-transform: uppercase; }
+    .badge { position: absolute; top: 12px; left: 12px; padding: 4px 10px; border-radius: 6px; font-size: 10px; font-weight: bold; text-transform: uppercase; display: flex; align-items: center; gap: 4px;}
     .badge-hot { background: rgba(255,255,255,0.9); color: #f12711; }
     .badge-new { background: rgba(255,255,255,0.9); color: #2575fc; }
     .badge-vip { background: #000; color: #ffd700; border: 1px solid #ffd700; }
 
-    .table-title-area { display: flex; flex-direction: column; gap: 4px; z-index: 1; margin-top: 10px;}
-    .table-title { font-size: 18px; font-weight: 900; text-transform: uppercase; color: #fff; }
+    .table-content { display: flex; flex-direction: column; gap: 5px; z-index: 1; margin-top: 15px;}
+    .table-title { font-size: 18px; font-weight: 900; text-transform: uppercase; color: #fff; text-shadow: 0 2px 4px rgba(0,0,0,0.3);}
     .table-limit { font-size: 13px; color: rgba(255,255,255,0.8); font-weight: 600;}
     
-    .table-timer-area { text-align: right; z-index: 1; margin-top: 10px;}
-    .table-timer { font-size: 20px; font-weight: bold; color: #fff; font-family: monospace; }
-    .table-timer-label { font-size: 10px; color: rgba(255,255,255,0.7); text-transform: uppercase; }
+    .table-timer-container { text-align: right; z-index: 1; margin-top: 15px;}
+    .table-timer { font-size: 20px; font-weight: bold; color: #fff; font-family: monospace; text-shadow: 0 2px 4px rgba(0,0,0,0.5);}
+    .table-timer-label { font-size: 10px; color: rgba(255,255,255,0.7); text-transform: uppercase; margin-top: 4px;}
 
-    /* Table Inner Content (Leaderboard & Join Button) */
-    .table-inner { padding: 15px; background: var(--bg-dark); }
+    /* ===== DETAIL PAGE STYLES ===== */
+    .detail-header { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; }
+    .back-btn-circle { background: var(--bg-card); border: 1px solid #333; color: white; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; }
     
-    .mini-lb-title { font-size: 12px; color: var(--text-muted); text-transform: uppercase; margin-bottom: 8px; display: flex; justify-content: space-between;}
-    
-    .mini-lb-list { display: flex; flex-direction: column; gap: 6px; margin-bottom: 15px; }
-    .mini-lb-row { display: flex; justify-content: space-between; align-items: center; font-size: 13px; background: var(--bg-card); padding: 8px 12px; border-radius: 8px;}
+    .mini-lb-title { font-size: 14px; color: var(--text-muted); text-transform: uppercase; margin-bottom: 10px; display: flex; justify-content: space-between;}
+    .mini-lb-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; }
+    .mini-lb-row { display: flex; justify-content: space-between; align-items: center; font-size: 14px; background: var(--bg-card); padding: 12px 15px; border-radius: 10px; border: 1px solid #2a2a2a;}
     .mini-lb-name { font-weight: bold; color: #ddd; }
-    .mini-lb-chance { color: var(--success); font-weight: bold; background: rgba(76, 175, 80, 0.1); padding: 2px 6px; border-radius: 4px; font-size: 11px;}
-    .mini-lb-amount { color: var(--accent); font-size: 12px; margin-left: 10px;}
+    .mini-lb-chance { color: var(--success); font-weight: bold; background: rgba(76, 175, 80, 0.1); padding: 4px 8px; border-radius: 6px; font-size: 12px;}
+    .mini-lb-amount { color: var(--accent); font-size: 13px; margin-left: 10px;}
     
-    .btn-join { width: 100%; padding: 14px; border-radius: 10px; background: var(--primary); color: white; font-weight: bold; font-size: 16px; border: none; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 8px;}
-    .btn-join:active { transform: scale(0.98); }
-    .btn-join.disabled { background: #333; color: #666; cursor: not-allowed; }
+    .btn-join-large { width: 100%; padding: 16px; border-radius: 12px; background: var(--primary); color: white; font-weight: bold; font-size: 18px; border: none; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 8px; margin-top: 20px;}
+    .btn-join-large:active { transform: scale(0.98); }
 
     /* Navigation */
     .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background-color: var(--bg-card); display: flex; justify-content: space-between; align-items: center; padding: 10px 15px; border-top: 1px solid #2a2a2a; z-index: 100; padding-bottom: max(10px, env(safe-area-inset-bottom)); }
@@ -90,9 +95,11 @@
     .nav-home-btn.active { background: var(--primary); }
     .nav-home-label { position: absolute; bottom: -18px; font-size: 11px; color: var(--primary); font-weight: bold;}
 
-    /* Modals & Deposit Styles */
-    .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: var(--bg-dark); z-index: 200; overflow-y: auto; animation: fadeIn 0.2s ease; }
-    .modal-content { padding: 20px; min-height: 100vh; display: flex; flex-direction: column; }
+    /* Modals & Deposit */
+    .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.85); z-index: 200; overflow-y: auto; animation: fadeIn 0.2s ease; }
+    .modal-content { background: var(--bg-card); padding: 20px; border-radius: 20px; margin: 20px; }
+    .deposit-fullscreen { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: var(--bg-dark); z-index: 200; overflow-y: auto; }
+    
     .deposit-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; padding-top: 10px;}
     .back-btn { background: var(--bg-card); border: 1px solid #333; color: white; width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; }
     .wallet-address-box { display: flex; align-items: center; justify-content: space-between; background: var(--bg-card); padding: 14px 18px; border-radius: 14px; margin-bottom: 25px; border: 1px solid #333; }
@@ -100,7 +107,6 @@
     .copy-btn { background: none; border: none; color: var(--primary); cursor: pointer; padding: 5px;}
     .custom-input-wrapper { position: relative; margin-bottom: 15px; }
     .custom-input-wrapper input { width: 100%; padding: 18px 15px 18px 45px; border-radius: 14px; border: 1px solid #333; background: var(--bg-card); color: white; font-size: 22px; font-weight: bold; outline: none; }
-    .custom-input-wrapper input:focus { border-color: var(--primary); }
     .quick-amounts { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 25px; }
     .quick-amounts div { background: var(--bg-card); border: 1px solid #333; padding: 14px; border-radius: 12px; text-align: center; font-weight: 600; cursor: pointer; transition: 0.2s; color: #ddd;}
     .wallet-status-box { display: flex; align-items: center; justify-content: space-between; background: var(--bg-card); border: 1px solid #333; padding: 14px 18px; border-radius: 14px; margin-bottom: 20px; }
@@ -139,31 +145,58 @@
     </div>
   </div>
 
-  <!-- === PAGE 1: HOME (QUICK TABLES WITH LEADERBOARD) === -->
+  <!-- === PAGE 1: HOME (Only Banners) === -->
   <div id="page-home" class="page active">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
       <h3 style="font-size: 20px; color: #fff;">🎰 Quick Tables</h3>
       <span style="font-size: 12px; background: rgba(76, 175, 80, 0.2); color: var(--success); padding: 4px 8px; border-radius: 6px;">Auto-Draw: 2m</span>
     </div>
 
-    <div id="tables-container">
-      <!-- Tables will be generated by JS here -->
+    <div class="banner-container" id="home-tables-container">
+      <!-- Tables Generated by JS -->
     </div>
   </div>
 
-  <!-- === PAGE 2: MAIN LOTTERIES === -->
+  <!-- === PAGE 2: MAIN LOTTERIES (Only Banners) === -->
   <div id="page-main-lotteries" class="page">
-    <!-- ... (همان کدهای قبلی برای قرعه‌کشی‌های اصلی) ... -->
-    <h3 style="margin-bottom: 15px;">Main Lotteries</h3>
-    <p style="color: var(--text-muted);">Daily, Weekly, Monthly draws...</p>
+    <h3 style="margin-bottom: 20px; font-size: 20px; color: #fff;">🏆 Main Lotteries</h3>
+    <div class="banner-container" id="main-lotteries-container">
+      <!-- Lotteries Generated by JS -->
+    </div>
   </div>
 
-  <!-- === PAGE 3: LEADERBOARD === -->
+  <!-- === PAGE 3: DETAIL PAGE (Opened when clicking a banner) === -->
+  <div id="page-detail" class="page">
+    <div class="detail-header">
+      <button class="back-btn-circle" onclick="switchPage(currentPageOrigin)">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+      </button>
+      <h2 id="detail-title" style="font-size: 20px;">Table Name</h2>
+    </div>
+
+    <!-- Details go here -->
+    <div id="detail-banner-placeholder" style="margin-bottom: 20px;"></div>
+
+    <div class="mini-lb-title">
+      <span>Top Players</span>
+      <span>Chance to Win</span>
+    </div>
+    <div class="mini-lb-list" id="detail-lb-list">
+      <!-- Populated via JS -->
+    </div>
+
+    <button class="btn-join-large" id="detail-join-btn" onclick="openJoinModal()">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
+      Join Now
+    </button>
+  </div>
+
+  <!-- === PAGE 4: LEADERBOARD === -->
   <div id="page-lotteries" class="page">
     <h3 style="margin-bottom: 15px; font-size: 18px; color: #eee;">🏆 Global Leaderboard</h3>
   </div>
 
-  <!-- === PAGE 4: PROFILE === -->
+  <!-- === PAGE 5: PROFILE === -->
   <div class="page" id="page-profile">
     <div class="card text-center" style="background: var(--bg-card); border-radius: 16px; padding: 30px 20px;">
       <h3 id="profile-name" style="margin-bottom: 5px; font-size: 20px;">Player Name</h3>
@@ -201,9 +234,9 @@
     </div>
   </div>
 
-  <!-- === DEPOSIT MODAL === -->
-  <div class="modal" id="deposit-modal">
-    <div class="modal-content">
+  <!-- === DEPOSIT FULLSCREEN === -->
+  <div class="deposit-fullscreen" id="deposit-modal">
+    <div style="padding: 20px; display: flex; flex-direction: column; min-height: 100vh;">
       <div class="deposit-header">
         <button class="back-btn" onclick="closeDepositModal()">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
@@ -250,12 +283,30 @@
     </div>
   </div>
 
+  <!-- === JOIN MODAL === -->
+  <div class="modal" id="join-modal">
+    <div class="modal-content">
+      <h2 id="join-modal-title" style="margin-bottom: 10px; font-size: 20px; text-align: center;">Join</h2>
+      <p id="join-modal-range" style="color: var(--text-muted); font-size: 14px; text-align: center; margin-bottom: 20px;">Entry: 1 - 10 TON</p>
+      
+      <div class="custom-input-wrapper">
+        <input type="number" id="join-input" placeholder="Enter amount" step="0.1">
+        <div style="position: absolute; left: 15px; top: 50%; transform: translateY(-50%); pointer-events: none; color: var(--ton-blue); font-weight: bold;">💎</div>
+      </div>
+
+      <button class="btn-deposit-action" onclick="confirmJoin()" style="margin-top: 15px; background: var(--success);">Confirm & Join</button>
+      <button onclick="closeJoinModal()" style="width: 100%; background: none; border: none; color: var(--text-muted); margin-top: 15px; cursor: pointer;">Cancel</button>
+    </div>
+  </div>
+
   <script>
     const MY_TON_WALLET = "UQC1AAJaC9IGTWNpjfxzBEfK-J9T29upIMuC5WLdeRPeb7qc";
     const MANIFEST_URL = 'https://emmo865.github.io/wallet-site/tonconnect-manifest.json';
     
     let tonConnectUI = null;
     let currentWallet = null;
+    let currentPageOrigin = 'home'; // For back button logic
+    let currentJoinItem = null; // Store the data of the item being joined
 
     // Telegram Init
     if (window.Telegram && Telegram.WebApp) {
@@ -268,61 +319,86 @@
       }
     }
 
-    // ===== TABLES DATA (With Mock Leaderboard Data) =====
-    const tablesData = [
-      { 
-        id: 1, name: "Table 1", min: 1, max: 10, badge: "HOT", badgeClass: "badge-hot", bgClass: "banner-blue",
-        // داده‌های دمو برای لیدربرد این میز
-        players: [
-          { name: "PlayerA", amount: 5, chance: "50%" },
-          { name: "PlayerB", amount: 3, chance: "30%" },
-          { name: "PlayerC", amount: 2, chance: "20%" }
-        ]
-      },
-      { 
-        id: 2, name: "Table 2", min: 10, max: 25, badge: "NEW", badgeClass: "badge-new", bgClass: "banner-orange",
-        players: [
-          { name: "PlayerX", amount: 20, chance: "80%" },
-          { name: "PlayerY", amount: 5, chance: "20%" }
-        ]
-      },
-      // بقیه میزها بدون داده دمو برای تست ظاهر
-      { id: 3, name: "Table 3", min: 25, max: 50, badge: "", badgeClass: "", bgClass: "banner-purple", players: [] },
-      { id: 4, name: "Table 4", min: 50, max: 100, badge: "", badgeClass: "", bgClass: "banner-green", players: [] },
-      { id: 5, name: "Table 5", min: 100, max: 250, badge: "VIP", badgeClass: "badge-vip", bgClass: "banner-red", players: [] },
+    // ===== DATA =====
+    const quickTables = [
+      { id: 1, type: 'table', name: "Table 1", min: 1, max: 10, badge: "HOT", badgeClass: "badge-hot", bgClass: "banner-blue", players: [{ name: "PlayerA", amount: 5, chance: "50%" }, { name: "PlayerB", amount: 3, chance: "30%" }] },
+      { id: 2, type: 'table', name: "Table 2", min: 10, max: 25, badge: "NEW", badgeClass: "badge-new", bgClass: "banner-orange", players: [] },
+      { id: 3, type: 'table', name: "Table 3", min: 25, max: 50, badge: "", badgeClass: "", bgClass: "banner-purple", players: [] },
+      { id: 4, type: 'table', name: "Table 4", min: 50, max: 100, badge: "", badgeClass: "", bgClass: "banner-green", players: [] },
+      { id: 5, type: 'table', name: "Table 5", min: 100, max: 250, badge: "VIP", badgeClass: "badge-vip", bgClass: "banner-red", players: [] },
     ];
 
-    // Generate tables HTML
-    const container = document.getElementById('tables-container');
-    tablesData.forEach(table => {
-      const wrapper = document.createElement('div');
-      wrapper.className = 'table-container';
-      
-      // ساخت بنر بالایی
-      let badgeHtml = '';
-      if(table.badge) {
-        badgeHtml = `<div class="badge ${table.badgeClass}">${table.badge === 'HOT' ? '🔥' : table.badge === 'NEW' ? '⚡' : '💎'} ${table.badge}</div>`;
-      }
+    const mainLotteries = [
+      { id: 101, type: 'lottery', name: "Daily Draw", min: 0.1, max: 0.1, badge: "", badgeClass: "", bgClass: "banner-green", players: [] },
+      { id: 102, type: 'lottery', name: "Weekly Draw", min: 0.5, max: 0.5, badge: "HOT", badgeClass: "badge-hot", bgClass: "banner-blue", players: [] },
+      { id: 103, type: 'lottery', name: "Monthly Draw", min: 2.0, max: 2.0, badge: "VIP", badgeClass: "badge-vip", bgClass: "banner-gold", players: [] },
+    ];
 
-      const bannerHtml = `
-        <div class="table-banner ${table.bgClass}">
+    // ===== RENDER BANNERS =====
+    function renderBanners(containerId, dataArray) {
+      const container = document.getElementById(containerId);
+      container.innerHTML = ''; // Clear first
+      
+      dataArray.forEach(item => {
+        const banner = document.createElement('div');
+        banner.className = `banner ${item.bgClass}`;
+        banner.onclick = () => openDetailPage(item);
+        
+        let badgeHtml = '';
+        if(item.badge) {
+          badgeHtml = `<div class="badge ${item.badgeClass}">${item.badge === 'HOT' ? '🔥' : item.badge === 'VIP' ? '💎' : '⚡'} ${item.badge}</div>`;
+        }
+
+        // Format the timer / limit display
+        let subtitle = item.type === 'table' ? `Entry: ${item.min} - ${item.max} TON` : `Ticket: ${item.min} TON`;
+
+        banner.innerHTML = `
           ${badgeHtml}
-          <div class="table-title-area">
-            <div class="table-title">${table.name}</div>
-            <div class="table-limit">Entry: ${table.min} - ${table.max} TON</div>
+          <div class="table-content">
+            <div class="table-title">${item.name}</div>
+            <div class="table-limit">${subtitle}</div>
           </div>
-          <div class="table-timer-area">
-            <div class="table-timer" id="timer-${table.id}">02:00</div>
-            <div class="table-timer-label">Auto-Draw</div>
+          <div class="table-timer-container">
+            <div class="table-timer">${item.type === 'table' ? '02:00' : '--:--'}</div>
+            <div class="table-timer-label">${item.type === 'table' ? 'Auto-Draw' : 'Ends In'}</div>
+          </div>
+        `;
+        
+        container.appendChild(banner);
+      });
+    }
+
+    // Initial Render
+    renderBanners('home-tables-container', quickTables);
+    renderBanners('main-lotteries-container', mainLotteries);
+
+    // ===== DETAIL PAGE LOGIC =====
+    function openDetailPage(item) {
+      currentJoinItem = item;
+      
+      // Determine where we came from for the back button
+      if (item.type === 'table') currentPageOrigin = 'home';
+      else currentPageOrigin = 'main-lotteries';
+
+      // Set titles
+      document.getElementById('detail-title').innerText = item.name;
+      
+      // Set Banner placeholder
+      document.getElementById('detail-banner-placeholder').innerHTML = `
+        <div class="banner ${item.bgClass}" style="pointer-events: none;">
+          <div class="table-content">
+            <div class="table-title">${item.name}</div>
+            <div class="table-limit">${item.type === 'table' ? 'Entry: ' + item.min + ' - ' + item.max + ' TON' : 'Ticket: ' + item.min + ' TON'}</div>
           </div>
         </div>
       `;
 
-      // ساخت بخش پایینی (لیدربرد + دکمه جوین)
-      let lbRows = '';
-      if (table.players.length > 0) {
-        table.players.forEach(p => {
-          lbRows += `
+      // Populate Leaderboard
+      const lbList = document.getElementById('detail-lb-list');
+      lbList.innerHTML = '';
+      if (item.players && item.players.length > 0) {
+        item.players.forEach(p => {
+          lbList.innerHTML += `
             <div class="mini-lb-row">
               <div class="mini-lb-name">${p.name}</div>
               <div style="display:flex; align-items:center;">
@@ -333,85 +409,17 @@
           `;
         });
       } else {
-        lbRows = `<div style="text-align: center; color: var(--text-muted); font-size: 12px; padding: 10px;">No players yet. Be the first!</div>`;
+        lbList.innerHTML = `<div style="text-align: center; color: var(--text-muted); padding: 20px;">No players yet.</div>`;
       }
 
-      const innerHtml = `
-        <div class="table-inner">
-          <div class="mini-lb-title">
-            <span>Top Players</span>
-            <span>Chance to Win</span>
-          </div>
-          <div class="mini-lb-list">
-            ${lbRows}
-          </div>
-          <button class="btn-join" onclick="openJoinModal(${table.id}, ${table.min}, ${table.max})">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
-            Join ${table.name}
-          </button>
-        </div>
-      `;
+      // Set join button text
+      const joinBtn = document.getElementById('detail-join-btn');
+      joinBtn.innerHTML = item.type === 'table' ? `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg> Join Table` : `🎟 Buy Ticket`;
 
-      wrapper.innerHTML = bannerHtml + innerHtml;
-      container.appendChild(wrapper);
-    });
-
-    // Timer Logic
-    setInterval(() => {
-      tablesData.forEach(table => {
-        const timerEl = document.getElementById(`timer-${table.id}`);
-        if(!timerEl) return;
-        let [mins, secs] = timerEl.innerText.split(':').map(Number);
-        if (secs === 0) {
-          if (mins === 0) { timerEl.innerText = `02:00`; return; }
-          mins--; secs = 59;
-        } else { secs--; }
-        timerEl.innerText = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
-      });
-    }, 1000);
-
-    // ===== JOIN TABLE MODAL =====
-    let currentJoinTableId = null;
-    let currentJoinMin = 0;
-    let currentJoinMax = 0;
-
-    function openJoinModal(tableId, min, max) {
-      currentJoinTableId = tableId;
-      currentJoinMin = min;
-      currentJoinMax = max;
-      
-      // به‌روزرسانی UI مودال
-      document.getElementById('join-modal-title').innerText = `Join Table ${tableId}`;
-      document.getElementById('join-modal-range').innerText = `Entry Amount: ${min} - ${max} TON`;
-      document.getElementById('join-input').value = min; // مقدار پیش‌فرض
-      document.getElementById('join-modal').style.display = 'flex';
+      // Navigate
+      switchPage('detail');
     }
 
-    function closeJoinModal() {
-      document.getElementById('join-modal').style.display = 'none';
-    }
-
-    function confirmJoin() {
-      const amount = parseFloat(document.getElementById('join-input').value);
-      if (isNaN(amount) || amount < currentJoinMin || amount > currentJoinMax) {
-        alert(`Please enter an amount between ${currentJoinMin} and ${currentJoinMax} TON.`);
-        return;
-      }
-
-      // ارسال اطلاعات به ربات
-      if (window.Telegram && Telegram.WebApp) {
-        const payload = JSON.stringify({
-          action: "join_table",
-          table_id: currentJoinTableId,
-          amount: amount
-        });
-        Telegram.WebApp.sendData(payload);
-      }
-      
-      closeJoinModal();
-    }
-
-    // ===== NAVIGATION =====
     function switchPage(pageName) {
       document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
       document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
@@ -421,6 +429,45 @@
       if(pageName === 'main-lotteries') document.getElementById('nav-main-lotteries').classList.add('active');
       if(pageName === 'lotteries') document.getElementById('nav-lotteries').classList.add('active');
       if(pageName === 'profile') document.getElementById('nav-profile').classList.add('active');
+    }
+
+    // ===== JOIN MODAL LOGIC =====
+    function openJoinModal() {
+      if (!currentJoinItem) return;
+      
+      document.getElementById('join-modal-title').innerText = `Join ${currentJoinItem.name}`;
+      
+      const rangeText = currentJoinItem.type === 'table' ? `Entry Amount: ${currentJoinItem.min} - ${currentJoinItem.max} TON` : `Ticket Price: ${currentJoinItem.min} TON`;
+      document.getElementById('join-modal-range').innerText = rangeText;
+      
+      const input = document.getElementById('join-input');
+      input.value = currentJoinItem.min;
+      input.min = currentJoinItem.min;
+      input.max = currentJoinItem.max;
+      
+      document.getElementById('join-modal').style.display = 'flex';
+    }
+
+    function closeJoinModal() {
+      document.getElementById('join-modal').style.display = 'none';
+    }
+
+    function confirmJoin() {
+      const amount = parseFloat(document.getElementById('join-input').value);
+      if (isNaN(amount) || amount < currentJoinItem.min || amount > currentJoinItem.max) {
+        alert(`Please enter an amount between ${currentJoinItem.min} and ${currentJoinItem.max} TON.`);
+        return;
+      }
+
+      if (window.Telegram && Telegram.WebApp) {
+        Telegram.WebApp.sendData(JSON.stringify({
+          action: currentJoinItem.type === 'table' ? "join_table" : "buy_lottery_ticket",
+          item_id: currentJoinItem.id,
+          amount: amount
+        }));
+      }
+      
+      closeJoinModal();
     }
 
     // ===== DEPOSIT LOGIC =====
@@ -493,22 +540,5 @@
       }
     }
   </script>
-
-  <!-- === JOIN MODAL === -->
-  <div class="modal" id="join-modal" style="align-items: center; justify-content: center; background: rgba(0,0,0,0.8);">
-    <div style="background: var(--bg-card); width: 90%; max-width: 400px; padding: 25px; border-radius: 20px; border: 1px solid #333;">
-      <h2 id="join-modal-title" style="margin-bottom: 10px; font-size: 20px; text-align: center;">Join Table</h2>
-      <p id="join-modal-range" style="color: var(--text-muted); font-size: 14px; text-align: center; margin-bottom: 20px;">Entry: 1 - 10 TON</p>
-      
-      <div class="custom-input-wrapper">
-        <input type="number" id="join-input" placeholder="Enter amount" step="0.1">
-        <div style="position: absolute; left: 15px; top: 50%; transform: translateY(-50%); pointer-events: none; color: var(--ton-blue); font-weight: bold;">💎</div>
-      </div>
-
-      <button class="btn-deposit-action" onclick="confirmJoin()" style="margin-top: 15px; background: var(--success);">Confirm & Join</button>
-      <button onclick="closeJoinModal()" style="width: 100%; background: none; border: none; color: var(--text-muted); margin-top: 15px; cursor: pointer;">Cancel</button>
-    </div>
-  </div>
-
 </body>
 </html>
