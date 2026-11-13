@@ -18,91 +18,92 @@
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; -webkit-tap-highlight-color: transparent; }
     body { background-color: var(--bg-dark); color: var(--text-main); padding-bottom: 90px; overflow-x: hidden; }
     
-    /* ===== TOP HEADER (New Style) ===== */
+    /* ===== TOP HEADER ===== */
     .top-header { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background-color: var(--bg-dark); position: sticky; top: 0; z-index: 10; }
-    
     .user-info { display: flex; align-items: center; gap: 10px; cursor: pointer; }
     .user-avatar-top { width: 36px; height: 36px; border-radius: 50%; background: var(--primary); display: flex; align-items: center; justify-content: center; overflow: hidden; border: 2px solid #333;}
     .user-details { display: flex; flex-direction: column; }
     .user-label { font-size: 10px; color: var(--text-muted); text-transform: uppercase; }
     .user-name-top { font-size: 14px; font-weight: bold; }
-    
     .right-header { display: flex; align-items: center; gap: 10px; }
-    .balance-display-top { display: flex; align-items: center; gap: 5px; font-size: 16px; font-weight: bold; }
     .btn-deposit-top { background: var(--primary); color: white; padding: 8px 15px; border-radius: 20px; font-size: 14px; font-weight: bold; border: none; cursor: pointer; display: flex; align-items: center; gap: 5px; box-shadow: 0 4px 10px rgba(123, 97, 255, 0.3); }
-    
-    /* Pages & Cards */
+
+    /* Pages */
     .page { display: none; padding: 15px; animation: fadeIn 0.3s ease; }
     .page.active { display: block; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-    .card { background-color: var(--bg-card); border-radius: 16px; padding: 20px; margin-bottom: 15px; border: 1px solid #2a2a2a; }
 
-    /* Leaderboard Tabs */
-    .lb-tabs { display: flex; background: var(--bg-card); border-radius: 12px; padding: 5px; margin-bottom: 15px; border: 1px solid #2a2a2a;}
-    .lb-tab { flex: 1; padding: 12px; text-align: center; border-radius: 8px; font-size: 14px; font-weight: 600; color: var(--text-muted); cursor: pointer; transition: 0.3s; }
-    .lb-tab.active { background: var(--primary); color: white; box-shadow: 0 4px 10px rgba(123, 97, 255, 0.3); }
+    /* ===== PREMIUM TABLE BANNERS ===== */
+    .table-banner { 
+      position: relative; 
+      border-radius: 16px; 
+      padding: 20px; 
+      margin-bottom: 15px; 
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center;
+      overflow: hidden;
+      cursor: pointer;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .table-banner:active { transform: scale(0.98); }
+    
+    /* Gradients for tables */
+    .banner-blue { background: linear-gradient(135deg, #2b5876 0%, #4e4376 100%); }
+    .banner-orange { background: linear-gradient(135deg, #f12711 0%, #f5af19 100%); }
+    .banner-purple { background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%); }
+    .banner-green { background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); }
+    .banner-red { background: linear-gradient(135deg, #cb2d3e 0%, #ef473a 100%); }
+    .banner-dark { background: linear-gradient(135deg, #1e1e1e 0%, #3a3a3a 100%); border: 1px solid #444; }
+    .banner-gold { background: linear-gradient(135deg, #b8860b 0%, #ffd700 100%); color: #000; }
+    .banner-gold .table-limit, .banner-gold .table-title { color: #000; }
 
-    /* Leaderboard Styles */
-    .leaderboard-header { background: linear-gradient(135deg, #2b1b54 0%, #1a1a1a 100%); border-radius: 16px; padding: 20px; margin-bottom: 20px; border: 1px solid #4a2c8a; display: flex; align-items: center; gap: 12px;}
-    .lb-title { font-size: 20px; font-weight: bold; }
+    /* Badges */
+    .badge { position: absolute; top: 12px; left: 12px; padding: 4px 10px; border-radius: 6px; font-size: 10px; font-weight: bold; text-transform: uppercase; display: flex; align-items: center; gap: 4px;}
+    .badge-hot { background: rgba(255,255,255,0.9); color: #f12711; }
+    .badge-new { background: rgba(255,255,255,0.9); color: #2575fc; }
+    .badge-vip { background: #000; color: #ffd700; border: 1px solid #ffd700; }
+
+    .table-content { display: flex; flex-direction: column; gap: 5px; z-index: 1; margin-top: 15px;}
+    .table-title { font-size: 20px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; color: #fff; text-shadow: 0 2px 4px rgba(0,0,0,0.3);}
+    .table-limit { font-size: 14px; color: rgba(255,255,255,0.8); font-weight: 600; display: flex; align-items: center; gap: 5px;}
     
-    .lb-list { display: flex; flex-direction: column; gap: 10px; }
-    .lb-row { display: flex; align-items: center; background: var(--bg-card); padding: 12px 15px; border-radius: 16px; border: 1px solid #2a2a2a; transition: 0.2s;}
-    .lb-row.rank-1 { border-color: rgba(255, 215, 0, 0.5); background: linear-gradient(90deg, rgba(255, 215, 0, 0.05) 0%, rgba(30, 30, 30, 1) 100%); }
-    .lb-row.rank-2 { border-color: rgba(192, 192, 192, 0.5); background: linear-gradient(90deg, rgba(192, 192, 192, 0.05) 0%, rgba(30, 30, 30, 1) 100%); }
-    .lb-row.rank-3 { border-color: rgba(205, 127, 50, 0.5); background: linear-gradient(90deg, rgba(205, 127, 50, 0.05) 0%, rgba(30, 30, 30, 1) 100%); }
-    
-    .lb-rank-icon { width: 32px; display: flex; justify-content: center; margin-right: 10px;}
-    .lb-avatar { width: 42px; height: 42px; border-radius: 50%; background: #2a2a2a; margin-right: 15px; border: 1px solid #444;}
-    .lb-name { flex: 1; font-weight: 600; font-size: 15px; color: #eee;}
-    .lb-tickets { font-weight: bold; color: var(--accent); font-size: 14px; display: flex; align-items: center; gap: 6px; background: rgba(255, 204, 0, 0.1); padding: 4px 10px; border-radius: 8px;}
-    
-    /* Sticky User Row */
-    .sticky-user-row { position: sticky; bottom: 90px; background: var(--bg-card-hover); border-radius: 16px; padding: 12px 15px; display: flex; align-items: center; border: 1px solid #444; margin-top: 20px; box-shadow: 0 -5px 20px rgba(0,0,0,0.6); z-index: 50;}
-    .sticky-rank { font-weight: bold; color: var(--text-muted); width: 40px; font-size: 14px;}
-    .sticky-avatar { width: 40px; height: 40px; border-radius: 50%; background: rgba(123, 97, 255, 0.2); display: flex; align-items: center; justify-content: center; margin-right: 15px;}
-    
-    /* Bottom Navigation */
+    .table-timer-container { text-align: right; z-index: 1; margin-top: 15px;}
+    .table-timer { font-size: 22px; font-weight: bold; color: #fff; font-family: monospace; text-shadow: 0 2px 4px rgba(0,0,0,0.5);}
+    .table-timer-label { font-size: 11px; color: rgba(255,255,255,0.7); text-transform: uppercase; margin-top: 4px;}
+
+    /* Navigation */
     .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background-color: var(--bg-card); display: flex; justify-content: space-between; align-items: center; padding: 10px 15px; border-top: 1px solid #2a2a2a; z-index: 100; padding-bottom: max(10px, env(safe-area-inset-bottom)); }
     .nav-item { display: flex; flex-direction: column; align-items: center; color: var(--text-muted); font-size: 11px; cursor: pointer; transition: 0.2s; flex: 1;}
     .nav-item.active { color: var(--primary); }
     .nav-icon-wrapper { height: 24px; display: flex; align-items: center; justify-content: center; margin-bottom: 4px;}
-    
-    /* Centered Home Button */
     .nav-home-wrapper { flex: 1; display: flex; justify-content: center; align-items: center; position: relative;}
     .nav-home-btn { background: var(--primary); color: white; width: 60px; height: 60px; border-radius: 50%; display: flex; justify-content: center; align-items: center; margin-top: -35px; box-shadow: 0 8px 20px rgba(123, 97, 255, 0.5); cursor: pointer; border: 4px solid var(--bg-dark); transition: 0.2s; z-index: 101;}
-    .nav-home-btn:active { transform: scale(0.95); }
+    .nav-home-btn.active { background: var(--primary); }
     .nav-home-label { position: absolute; bottom: -18px; font-size: 11px; color: var(--primary); font-weight: bold;}
 
-    /* Modals */
+    /* Modals & Deposit Styles */
     .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: var(--bg-dark); z-index: 200; overflow-y: auto; animation: fadeIn 0.2s ease; }
     .modal-content { padding: 20px; min-height: 100vh; display: flex; flex-direction: column; }
-    
-    /* Deposit Modal */
     .deposit-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; padding-top: 10px;}
     .back-btn { background: var(--bg-card); border: 1px solid #333; color: white; width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; }
     .wallet-address-box { display: flex; align-items: center; justify-content: space-between; background: var(--bg-card); padding: 14px 18px; border-radius: 14px; margin-bottom: 25px; border: 1px solid #333; }
     .wallet-address-box span { font-family: monospace; font-size: 15px; color: var(--text-muted); }
     .copy-btn { background: none; border: none; color: var(--primary); cursor: pointer; padding: 5px;}
-    
     .custom-input-wrapper { position: relative; margin-bottom: 15px; }
     .custom-input-wrapper input { width: 100%; padding: 18px 15px 18px 45px; border-radius: 14px; border: 1px solid #333; background: var(--bg-card); color: white; font-size: 22px; font-weight: bold; outline: none; }
-    .custom-input-wrapper input:focus { border-color: var(--primary); box-shadow: 0 0 0 2px rgba(123, 97, 255, 0.2); }
-    
+    .custom-input-wrapper input:focus { border-color: var(--primary); }
     .quick-amounts { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 25px; }
     .quick-amounts div { background: var(--bg-card); border: 1px solid #333; padding: 14px; border-radius: 12px; text-align: center; font-weight: 600; cursor: pointer; transition: 0.2s; color: #ddd;}
     .quick-amounts div:hover { border-color: var(--primary); color: var(--primary); }
-    
-    .wallet-status-box { display: flex; align-items: center; justify-content: space-between; background: var(--bg-card); border: 1px solid #333; padding: 14px 18px; border-radius: 14px; margin-bottom: 20px; transition: 0.3s; }
+    .wallet-status-box { display: flex; align-items: center; justify-content: space-between; background: var(--bg-card); border: 1px solid #333; padding: 14px 18px; border-radius: 14px; margin-bottom: 20px; }
     .wallet-status-box.connected { background: rgba(76, 175, 80, 0.05); border-color: rgba(76, 175, 80, 0.3); }
     .wallet-status-left { display: flex; align-items: center; gap: 10px; font-size: 14px; font-weight: 500; }
     .status-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--text-muted); }
     .wallet-status-box.connected .status-dot { background: var(--success); box-shadow: 0 0 10px var(--success); }
-    
-    .btn-deposit-action { width: 100%; padding: 18px; border: none; border-radius: 14px; font-size: 18px; font-weight: bold; cursor: pointer; background-color: var(--primary); color: white; transition: 0.2s; box-shadow: 0 4px 15px rgba(123, 97, 255, 0.3);}
-    .btn-deposit-action:disabled { background-color: var(--bg-card); color: #555; cursor: not-allowed; box-shadow: none; border: 1px solid #333;}
-
-    svg { display: block; }
+    .btn-deposit-action { width: 100%; padding: 18px; border: none; border-radius: 14px; font-size: 18px; font-weight: bold; cursor: pointer; background-color: var(--primary); color: white; transition: 0.2s; }
+    .btn-deposit-action:disabled { background-color: var(--bg-card); color: #555; cursor: not-allowed; border: 1px solid #333;}
   </style>
 </head>
 <body>
@@ -132,90 +133,23 @@
     </div>
   </div>
 
-  <!-- === PAGE 1: HOME === -->
+  <!-- === PAGE 1: HOME (TABLES) === -->
   <div id="page-home" class="page active">
-    <div class="card" style="background: linear-gradient(135deg, #7b61ff 0%, #2a5298 100%); border-radius: 16px; padding: 25px;">
-      <h2 style="font-size: 24px; color: white; margin-bottom: 5px;">Mega Lottery 🎰</h2>
-      <p style="font-size: 14px; color: #eee;">Buy tickets to win big TON prizes!</p>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+      <h3 style="font-size: 20px; color: #fff;">🎰 Lottery Tables</h3>
+      <span style="font-size: 12px; background: rgba(76, 175, 80, 0.2); color: var(--success); padding: 4px 8px; border-radius: 6px;">Auto-Draw: 2m</span>
+    </div>
+
+    <div id="tables-container">
+      <!-- Tables will be generated by JS here -->
     </div>
   </div>
 
   <!-- === PAGE 2: LEADERBOARD === -->
   <div id="page-lotteries" class="page">
-    <div class="lb-tabs">
-      <div class="lb-tab active" onclick="switchLbTab('daily')">Daily</div>
-      <div class="lb-tab" onclick="switchLbTab('weekly')">Weekly</div>
-      <div class="lb-tab" onclick="switchLbTab('monthly')">Monthly</div>
-    </div>
-
-    <div class="leaderboard-header">
-      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"></path><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"></path><path d="M4 22h16"></path><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"></path><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"></path><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"></path></svg>
-      <div class="lb-title">Top Participants</div>
-    </div>
-
-    <div id="lb-daily-list" class="lb-list">
-      <div class="lb-row rank-1">
-        <div class="lb-rank-icon">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"></circle><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"></path></svg>
-        </div>
-        <img class="lb-avatar" src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" alt="avatar">
-        <div class="lb-name">zz***z0</div>
-        <div class="lb-tickets">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"></path><path d="M13 5v2"></path><path d="M13 17v2"></path><path d="M13 11v2"></path></svg>
-          143
-        </div>
-      </div>
-      <div class="lb-row rank-2">
-        <div class="lb-rank-icon">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--silver)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"></circle><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"></path></svg>
-        </div>
-        <img class="lb-avatar" src="https://api.dicebear.com/7.x/avataaars/svg?seed=Alex" alt="avatar">
-        <div class="lb-name">nn***z4</div>
-        <div class="lb-tickets">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"></path><path d="M13 5v2"></path><path d="M13 17v2"></path><path d="M13 11v2"></path></svg>
-          135
-        </div>
-      </div>
-    </div>
-
-    <div id="lb-weekly-list" class="lb-list" style="display: none;">
-      <div class="lb-row rank-1">
-        <div class="lb-rank-icon">
-           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"></circle><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"></path></svg>
-        </div>
-        <img class="lb-avatar" src="https://api.dicebear.com/7.x/avataaars/svg?seed=Alice" alt="avatar">
-        <div class="lb-name">Al***ce</div>
-        <div class="lb-tickets">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"></path><path d="M13 5v2"></path><path d="M13 17v2"></path><path d="M13 11v2"></path></svg>
-          850
-        </div>
-      </div>
-    </div>
-
-    <div id="lb-monthly-list" class="lb-list" style="display: none;">
-      <div class="lb-row rank-1">
-        <div class="lb-rank-icon">
-           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"></circle><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"></path></svg>
-        </div>
-        <img class="lb-avatar" src="https://api.dicebear.com/7.x/avataaars/svg?seed=Charlie" alt="avatar">
-        <div class="lb-name">Ch***ie</div>
-        <div class="lb-tickets">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"></path><path d="M13 5v2"></path><path d="M13 17v2"></path><path d="M13 11v2"></path></svg>
-          3500
-        </div>
-      </div>
-    </div>
-
-    <div class="sticky-user-row">
-      <div class="sticky-rank">999+</div>
-      <div class="sticky-avatar">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-      </div>
-      <div class="lb-name" style="flex: 1;">You</div>
-      <div class="lb-tickets" id="user-current-tickets">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"></path><path d="M13 5v2"></path><path d="M13 17v2"></path><path d="M13 11v2"></path></svg>
-        0
-      </div>
+    <h3 style="margin-bottom: 15px; font-size: 18px; color: #eee;">🏆 Leaderboard</h3>
+    <div class="card" style="padding: 20px; text-align: center; color: var(--text-muted);">
+      Leaderboard coming soon...
     </div>
   </div>
 
@@ -239,7 +173,6 @@
       <span>Leaderboard</span>
     </div>
 
-    <!-- Centered Home Button -->
     <div class="nav-home-wrapper">
       <div class="nav-home-btn active" id="nav-home" onclick="switchPage('home')">
         <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
@@ -311,6 +244,7 @@
     let tonConnectUI = null;
     let currentWallet = null;
 
+    // Telegram Init
     if (window.Telegram && Telegram.WebApp) {
       Telegram.WebApp.ready();
       Telegram.WebApp.expand();
@@ -322,34 +256,93 @@
       }
     }
 
+    // ===== TABLES DATA (Customized like the screenshot) =====
+    const tablesData = [
+      { id: 1, name: "Table 1", min: 1, max: 10, badge: "HOT", badgeClass: "badge-hot", bgClass: "banner-blue" },
+      { id: 2, name: "Table 2", min: 10, max: 25, badge: "NEW", badgeClass: "badge-new", bgClass: "banner-orange" },
+      { id: 3, name: "Table 3", min: 25, max: 50, badge: "", badgeClass: "", bgClass: "banner-purple" },
+      { id: 4, name: "Table 4", min: 50, max: 100, badge: "", badgeClass: "", bgClass: "banner-green" },
+      { id: 5, name: "Table 5", min: 100, max: 250, badge: "VIP", badgeClass: "badge-vip", bgClass: "banner-red" },
+      { id: 6, name: "Table 6", min: 250, max: 500, badge: "", badgeClass: "", bgClass: "banner-dark" },
+      { id: 7, name: "Table 7", min: 500, max: 1000, badge: "HOT", badgeClass: "badge-hot", bgClass: "banner-orange" },
+      { id: 8, name: "Table 8", min: 1000, max: 5000, badge: "VIP", badgeClass: "badge-vip", bgClass: "banner-gold" }
+    ];
+
+    // Generate tables HTML
+    const container = document.getElementById('tables-container');
+    tablesData.forEach(table => {
+      const banner = document.createElement('div');
+      banner.className = `table-banner ${table.bgClass}`;
+      banner.onclick = () => joinTable(table.id, table.min, table.max);
+      
+      let badgeHtml = '';
+      if(table.badge) {
+        badgeHtml = `<div class="badge ${table.badgeClass}">${table.badge === 'HOT' ? '🔥' : table.badge === 'NEW' ? '⚡' : '💎'} ${table.badge}</div>`;
+      }
+
+      banner.innerHTML = `
+        ${badgeHtml}
+        <div class="table-content">
+          <div class="table-title">${table.name}</div>
+          <div class="table-limit">Entry: ${table.min} - ${table.max} TON</div>
+        </div>
+        <div class="table-timer-container">
+          <div class="table-timer" id="timer-${table.id}">02:00</div>
+          <div class="table-timer-label">Auto-Draw</div>
+        </div>
+      `;
+      
+      container.appendChild(banner);
+    });
+
+    // Timer Logic (Simulated for visual effect)
+    setInterval(() => {
+      tablesData.forEach(table => {
+        const timerEl = document.getElementById(`timer-${table.id}`);
+        if(!timerEl) return;
+        
+        let [mins, secs] = timerEl.innerText.split(':').map(Number);
+        if (secs === 0) {
+          if (mins === 0) {
+            timerEl.innerText = `02:00`;
+            return;
+          }
+          mins--;
+          secs = 59;
+        } else {
+          secs--;
+        }
+        timerEl.innerText = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+      });
+    }, 1000);
+
+    function joinTable(tableId, min, max) {
+      // Send data to the Telegram bot
+      if (window.Telegram && Telegram.WebApp) {
+        const payload = JSON.stringify({
+          action: "join_table",
+          table_id: tableId,
+          min_amount: min,
+          max_amount: max
+        });
+        Telegram.WebApp.sendData(payload);
+      } else {
+        alert(`You tried to join Table ${tableId} with entry ${min}-${max} TON`);
+      }
+    }
+
+    // ===== NAVIGATION =====
     function switchPage(pageName) {
       document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
       document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
       document.getElementById(`page-${pageName}`).classList.add('active');
       
-      // Update nav visuals
       if(pageName === 'home') document.getElementById('nav-home').classList.add('active');
       if(pageName === 'lotteries') document.getElementById('nav-lotteries').classList.add('active');
       if(pageName === 'profile') document.getElementById('nav-profile').classList.add('active');
     }
 
-    function switchLbTab(tabName) {
-      document.querySelectorAll('.lb-tab').forEach(t => t.classList.remove('active'));
-      document.querySelectorAll('.lb-list').forEach(l => l.style.display = 'none');
-      
-      if (tabName === 'daily') document.querySelectorAll('.lb-tab')[0].classList.add('active');
-      if (tabName === 'weekly') document.querySelectorAll('.lb-tab')[1].classList.add('active');
-      if (tabName === 'monthly') document.querySelectorAll('.lb-tab')[2].classList.add('active');
-      
-      document.getElementById(`lb-${tabName}-list`).style.display = 'flex';
-      
-      const mockUserTickets = { daily: 5, weekly: 0, monthly: 0 };
-      document.getElementById('user-current-tickets').innerHTML = `
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"></path><path d="M13 5v2"></path><path d="M13 17v2"></path><path d="M13 11v2"></path></svg>
-        ${mockUserTickets[tabName]}
-      `;
-    }
-
+    // ===== DEPOSIT LOGIC =====
     function openDepositModal() { 
       document.getElementById('deposit-modal').style.display = 'block'; 
       if (!tonConnectUI) initTonConnect();
